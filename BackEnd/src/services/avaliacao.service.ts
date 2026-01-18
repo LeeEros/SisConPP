@@ -1,4 +1,4 @@
-import { AvaliacaoSubQuesito, PrismaClient } from "@prisma/client";
+import { AvaliacaoSubQuesito, DancaSalaoTradicional, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -26,7 +26,7 @@ export class AvaliacaoService {
                         avaliadorId: data.avaliadorId,
                         candidatoId: data.candidatoId,
                         blocoProvaId: data.blocoProvaId,
-                        provaPraticaId: data.provaPraticaId,     
+                        provaPraticaId: data.provaPraticaId,
                         fichaCandidatoIdFicha: data.ficha.idFicha,
                         notaFinal: 0,
                     },
@@ -125,7 +125,7 @@ export class AvaliacaoService {
             return avaliacoes;
         } catch (error) {
             throw new Error(`Erro ao listar avaliações: ${error}`);
-        }   
+        }
     }
 
     async buscarEstruturaCompleta(
@@ -135,34 +135,95 @@ export class AvaliacaoService {
     ) {
         const candidato = await this.prisma.candidato.findUnique({
             where: { idCandidato: candidatoId },
-            include: { Categoria: true },
+            include: {
+                Categoria: {
+                    select: {
+                        idCategoria: true,
+                        nomeCategoria: true,
+                        sorteioDanca: true,
+                    },
+                },
+                PreferenciaSorteioDanca: {
+                    select: {
+                        nomeSorteioDanca: true,
+                        dancas: { select: { nomeDanca: true } },
+                    },
+                },
+                sorteioDanca: {
+                    orderBy: { dataSorteio: "desc" },
+                    take: 5,
+                    select: {
+                        tipoDanca: true,
+                        resultadoSorteio: true,
+                        dataSorteio: true,
+                    },
+                },
+            },
         });
 
         if (!candidato) throw new Error("Candidato não encontrado");
 
+        /**
+         * ======================================================
+         * 🎵 CONTEXTO DAS DANÇAS
+         * ======================================================
+         */
+        const possuiSorteio = Boolean(candidato.Categoria?.sorteioDanca);
+
+        const escolhasSalao = candidato.PreferenciaSorteioDanca
+            .filter((p) => p.nomeSorteioDanca === "DANCA_DE_SALAO")
+            .flatMap((p) => p.dancas.map((d) => d.nomeDanca));
+
+        const escolhasTradicional = candidato.PreferenciaSorteioDanca
+            .filter((p) => p.nomeSorteioDanca === "DANCA_TRADICIONAL")
+            .flatMap((p) => p.dancas.map((d) => d.nomeDanca));
+
+        const sorteioSalao = candidato.sorteioDanca.find(
+            (s) => s.tipoDanca === "DANCA_DE_SALAO"
+        );
+
+        const sorteioTradicional = candidato.sorteioDanca.find(
+            (s) => s.tipoDanca === "DANCA_TRADICIONAL"
+        );
+
+        const contextoDancas = {
+            possuiSorteio,
+            salao: {
+                sorteada: sorteioSalao
+                    ? `Sorteio #${sorteioSalao.resultadoSorteio}`
+                    : null,
+                escolhidas: escolhasSalao.length ? escolhasSalao : null,
+            },
+            tradicional: {
+                sorteada: sorteioTradicional
+                    ? `Sorteio #${sorteioTradicional.resultadoSorteio}`
+                    : null,
+                escolhidas: escolhasTradicional.length ? escolhasTradicional : null,
+            },
+        };
+
+        /**
+         * ======================================================
+         * 📋 PROVAS / BLOCOS / QUESITOS
+         * ======================================================
+         */
         const provaPratica = await this.prisma.provaPratica.findMany({
             where: {
                 categorias: {
-                    some: {
-                        idCategoria: candidato.categoriaId,
-                    },
+                    some: { idCategoria: candidato.categoriaId },
                 },
                 comissaoProvaPraticas: {
                     some: {
                         Comissao: {
                             usuarios: {
-                                some: {
-                                    usuarioId: avaliadorId,
-                                },
+                                some: { usuarioId: avaliadorId },
                             },
                         },
                     },
                 },
-                ...(provasSelecionadas?.length && {
-                    idProvaPratica: {
-                        in: provasSelecionadas,
-                    },
-                }),
+                ...(provasSelecionadas?.length
+                    ? { idProvaPratica: { in: provasSelecionadas } }
+                    : {}),
             },
             include: {
                 blocosProvas: {
@@ -177,7 +238,92 @@ export class AvaliacaoService {
             },
         });
 
-        return provaPratica;
+        /**
+         * ======================================================
+         * 🧠 INJETAR METADADOS DE DANÇA NO PAYLOAD
+         * ======================================================
+         */
+        const provaPraticaComMeta = await Promise.all(
+            provaPratica.map(async (pp) => {
+                const dancasSalao = await this.prisma.danca.findMany({
+                    where: { dancaSalaoTradicional: DancaSalaoTradicional.DANCA_DE_SALAO },
+                    select: { idDanca: true, nomeDanca: true },
+                    orderBy: { idDanca: "asc" }, 
+                });
+
+                const dancasTrad = await this.prisma.danca.findMany({
+                    where: { dancaSalaoTradicional: DancaSalaoTradicional.DANCA_TRADICIONAL },
+                    select: { idDanca: true, nomeDanca: true },
+                    orderBy: { idDanca: "asc" }, 
+                });
+
+                const nomeDancaSorteada = (
+                    tipo: "DANCA_DE_SALAO" | "DANCA_TRADICIONAL",
+                    resultadoSorteio: number | null | undefined
+                ) => {
+                    if (!resultadoSorteio || resultadoSorteio <= 0) return null;
+
+                    const lista = tipo === "DANCA_DE_SALAO" ? dancasSalao : dancasTrad;
+
+                    // resultadoSorteio normalmente é 1..N
+                    const idx = resultadoSorteio - 1;
+                    return lista[idx]?.nomeDanca ?? null;
+                };
+
+                return {
+                    ...pp,
+                    blocosProvas: pp.blocosProvas.map((bloco) => ({
+                        ...bloco,
+                        quesitos: bloco.quesitos.map((q) => {
+                            const nome = (q.nomeQuesito ?? "").toLowerCase();
+
+                            const isSalao =
+                                nome.includes("dança gaúcha de salão") ||
+                                nome.includes("danca gaucha de salao");
+
+                            const isFolclorica =
+                                nome.includes("dança folclórica tradicional") ||
+                                nome.includes("danca folclorica tradicional");
+
+                            if (!isSalao && !isFolclorica) return q;
+
+                            const tipo: "DANCA_DE_SALAO" | "DANCA_TRADICIONAL" = isSalao
+                                ? "DANCA_DE_SALAO"
+                                : "DANCA_TRADICIONAL";
+
+                            const ctx = isSalao ? contextoDancas.salao : contextoDancas.tradicional;
+                            const sorteioAtual = isSalao ? sorteioSalao : sorteioTradicional;
+
+                            const nomeSorteada = nomeDancaSorteada(
+                                tipo,
+                                sorteioAtual?.resultadoSorteio
+                            );
+
+                            const metaDanca = {
+                                tipo,
+                                possuiSorteio,
+                                sorteada: possuiSorteio ? nomeSorteada : null,
+                                escolhidas: !possuiSorteio ? ctx.escolhidas : null,
+                                textoExibicao: possuiSorteio
+                                    ? nomeSorteada
+                                        ? `Dança sorteada: ${nomeSorteada}`
+                                        : "Dança sorteada: (não realizada)"
+                                    : ctx.escolhidas?.length
+                                        ? `Dança escolhida: ${ctx.escolhidas.join(", ")}`
+                                        : "Dança escolhida: (não informada)",
+                            };
+
+                            return { ...q, metaDanca };
+                        }),
+                    })),
+                };
+            })
+        );
+
+        return {
+            provaPratica: provaPraticaComMeta,
+            contextoDancas,
+        };
     }
 
     async criarAvaliacaoTeorica(data: CriarAvaliacaoTeoricaDTO) {
