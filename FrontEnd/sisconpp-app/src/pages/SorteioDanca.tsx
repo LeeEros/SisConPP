@@ -18,6 +18,7 @@ import RoletaSorteio from "../components/Roleta/RoletaSorteio";
 import { Dices, Save, CheckCircle, RotateCcw, Trophy, XCircle } from "lucide-react";
 
 export default function SorteioDancas() {
+    const usuarioLogado = JSON.parse(localStorage.getItem("usuario") || "null");
     const [candidatos, setCandidatos] = useState<Candidato[]>([]);
     const [categorias, setCategorias] = useState<Categoria[]>([]);
     const [dancas, setDancas] = useState<Danca[]>([]);
@@ -35,8 +36,6 @@ export default function SorteioDancas() {
 
     const categoriaAtual = categorias.find((c) => c.idCategoria === categoriaSelecionada);
     const maxSelecionados = categoriaAtual?.sorteioDanca ?? null;
-
-    // ✅ REGRA: se sorteioDanca === 1 => NÃO TEM SORTEIO (só preferência)
     const naoTemSorteio = categoriaAtual?.sorteioDanca === 1;
 
     useEffect(() => {
@@ -192,7 +191,7 @@ export default function SorteioDancas() {
                                     <div className="w-full max-w-2xl">
                                         <RoletaSorteio
                                             candidatoId={candidatoSelecionado}
-                                            usuarioId={1}
+                                            usuarioId={usuarioLogado.idUsuario}
                                             tipoDanca={tipoDanca}
                                             dancas={dancas.filter((d) => selecionados.includes(d.idDanca))}
                                             onFinish={(resultado) => {
