@@ -57,7 +57,7 @@ const Sidebar: FC = () => {
     { label: "Avaliação Prática", icon: SquareMenu, href: "/avaliacao-pratica", roles: ["SECRETARIO", "AVALIADOR"] },
     { label: "Avaliação Teórica", icon: BookType, href: "/avaliacao-teorica", roles: ["SECRETARIO"] },
     { label: "Relatórios", icon: BookText, href: "/relatorios", roles: ["SECRETARIO"] },
-    { label: "Recursos", icon: Scale, href: "/recursos", roles: ["SECRETARIO", "AVALIADOR"] },
+    { label: "Recursos", icon: Scale, href: "/recursos", roles: ["SECRETARIO"] },
   ];
 
   const filteredMenuItems = userRole

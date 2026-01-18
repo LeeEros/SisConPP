@@ -165,11 +165,18 @@ export class AvaliacaoService {
 
         /**
          * ======================================================
-         * 🎵 CONTEXTO DAS DANÇAS
+         * ✅ REGRA CORRETA
+         * 0 ou 1 = NÃO tem sorteio (só preferência)
+         * 2+     = tem sorteio
          * ======================================================
          */
-        const possuiSorteio = Boolean(candidato.Categoria?.sorteioDanca);
+        const possuiSorteio = (candidato.Categoria?.sorteioDanca ?? 0) > 1;
 
+        /**
+         * ======================================================
+         * 🎵 PREFERÊNCIAS (SEMPRE)
+         * ======================================================
+         */
         const escolhasSalao = candidato.PreferenciaSorteioDanca
             .filter((p) => p.nomeSorteioDanca === "DANCA_DE_SALAO")
             .flatMap((p) => p.dancas.map((d) => d.nomeDanca));
@@ -177,30 +184,6 @@ export class AvaliacaoService {
         const escolhasTradicional = candidato.PreferenciaSorteioDanca
             .filter((p) => p.nomeSorteioDanca === "DANCA_TRADICIONAL")
             .flatMap((p) => p.dancas.map((d) => d.nomeDanca));
-
-        const sorteioSalao = candidato.sorteioDanca.find(
-            (s) => s.tipoDanca === "DANCA_DE_SALAO"
-        );
-
-        const sorteioTradicional = candidato.sorteioDanca.find(
-            (s) => s.tipoDanca === "DANCA_TRADICIONAL"
-        );
-
-        const contextoDancas = {
-            possuiSorteio,
-            salao: {
-                sorteada: sorteioSalao
-                    ? `Sorteio #${sorteioSalao.resultadoSorteio}`
-                    : null,
-                escolhidas: escolhasSalao.length ? escolhasSalao : null,
-            },
-            tradicional: {
-                sorteada: sorteioTradicional
-                    ? `Sorteio #${sorteioTradicional.resultadoSorteio}`
-                    : null,
-                escolhidas: escolhasTradicional.length ? escolhasTradicional : null,
-            },
-        };
 
         /**
          * ======================================================
@@ -240,84 +223,141 @@ export class AvaliacaoService {
 
         /**
          * ======================================================
-         * 🧠 INJETAR METADADOS DE DANÇA NO PAYLOAD
+         * 🧠 LISTAS DE DANÇAS (1x)
          * ======================================================
          */
-        const provaPraticaComMeta = await Promise.all(
-            provaPratica.map(async (pp) => {
-                const dancasSalao = await this.prisma.danca.findMany({
-                    where: { dancaSalaoTradicional: DancaSalaoTradicional.DANCA_DE_SALAO },
-                    select: { idDanca: true, nomeDanca: true },
-                    orderBy: { idDanca: "asc" }, 
-                });
+        const [dancasSalao, dancasTrad] = await Promise.all([
+            this.prisma.danca.findMany({
+                where: { dancaSalaoTradicional: DancaSalaoTradicional.DANCA_DE_SALAO },
+                select: { idDanca: true, nomeDanca: true },
+                orderBy: { idDanca: "asc" },
+            }),
+            this.prisma.danca.findMany({
+                where: { dancaSalaoTradicional: DancaSalaoTradicional.DANCA_TRADICIONAL },
+                select: { idDanca: true, nomeDanca: true },
+                orderBy: { idDanca: "asc" },
+            }),
+        ]);
 
-                const dancasTrad = await this.prisma.danca.findMany({
-                    where: { dancaSalaoTradicional: DancaSalaoTradicional.DANCA_TRADICIONAL },
-                    select: { idDanca: true, nomeDanca: true },
-                    orderBy: { idDanca: "asc" }, 
-                });
+        const mapSalao = new Map<number, string>(dancasSalao.map((d) => [d.idDanca, d.nomeDanca]));
+        const mapTrad = new Map<number, string>(dancasTrad.map((d) => [d.idDanca, d.nomeDanca]));
 
-                const nomeDancaSorteada = (
-                    tipo: "DANCA_DE_SALAO" | "DANCA_TRADICIONAL",
-                    resultadoSorteio: number | null | undefined
-                ) => {
-                    if (!resultadoSorteio || resultadoSorteio <= 0) return null;
+        const resolveNomeDanca = (
+            tipo: "DANCA_DE_SALAO" | "DANCA_TRADICIONAL",
+            resultadoSorteio: number | null | undefined
+        ) => {
+            if (!resultadoSorteio || resultadoSorteio <= 0) return null;
 
-                    const lista = tipo === "DANCA_DE_SALAO" ? dancasSalao : dancasTrad;
+            const map = tipo === "DANCA_DE_SALAO" ? mapSalao : mapTrad;
+            const lista = tipo === "DANCA_DE_SALAO" ? dancasSalao : dancasTrad;
 
-                    // resultadoSorteio normalmente é 1..N
-                    const idx = resultadoSorteio - 1;
-                    return lista[idx]?.nomeDanca ?? null;
-                };
+            // 1) tenta como idDanca
+            const porId = map.get(resultadoSorteio);
+            if (porId) return porId;
 
-                return {
-                    ...pp,
-                    blocosProvas: pp.blocosProvas.map((bloco) => ({
-                        ...bloco,
-                        quesitos: bloco.quesitos.map((q) => {
-                            const nome = (q.nomeQuesito ?? "").toLowerCase();
+            // 2) fallback: posição 1..N
+            const idx = resultadoSorteio - 1;
+            return lista[idx]?.nomeDanca ?? null;
+        };
 
-                            const isSalao =
-                                nome.includes("dança gaúcha de salão") ||
-                                nome.includes("danca gaucha de salao");
+        /**
+         * ======================================================
+         * 🎲 PEGA O SORTEIO MAIS RECENTE (POR TIPO)
+         * ======================================================
+         */
+        const sorteioSalaoAtual =
+            candidato.sorteioDanca
+                ?.filter((s) => s.tipoDanca === DancaSalaoTradicional.DANCA_DE_SALAO)
+                ?.sort((a, b) => new Date(b.dataSorteio).getTime() - new Date(a.dataSorteio).getTime())[0] ?? null;
 
-                            const isFolclorica =
-                                nome.includes("dança folclórica tradicional") ||
-                                nome.includes("danca folclorica tradicional");
+        const sorteioTradAtual =
+            candidato.sorteioDanca
+                ?.filter((s) => s.tipoDanca === DancaSalaoTradicional.DANCA_TRADICIONAL)
+                ?.sort((a, b) => new Date(b.dataSorteio).getTime() - new Date(a.dataSorteio).getTime())[0] ?? null;
 
-                            if (!isSalao && !isFolclorica) return q;
+        /**
+         * ======================================================
+         * ✅ CONTEXTO DAS DANÇAS (COM NOME)
+         * ======================================================
+         */
+        const nomeSalaoSorteada = possuiSorteio
+            ? resolveNomeDanca("DANCA_DE_SALAO", sorteioSalaoAtual?.resultadoSorteio)
+            : null;
 
-                            const tipo: "DANCA_DE_SALAO" | "DANCA_TRADICIONAL" = isSalao
-                                ? "DANCA_DE_SALAO"
-                                : "DANCA_TRADICIONAL";
+        const nomeTradSorteada = possuiSorteio
+            ? resolveNomeDanca("DANCA_TRADICIONAL", sorteioTradAtual?.resultadoSorteio)
+            : null;
 
-                            const ctx = isSalao ? contextoDancas.salao : contextoDancas.tradicional;
-                            const sorteioAtual = isSalao ? sorteioSalao : sorteioTradicional;
+        const contextoDancas = {
+            possuiSorteio,
+            salao: {
+                sorteada: nomeSalaoSorteada,
+                escolhidas: !possuiSorteio && escolhasSalao.length ? escolhasSalao : null,
+            },
+            tradicional: {
+                sorteada: nomeTradSorteada,
+                escolhidas: !possuiSorteio && escolhasTradicional.length ? escolhasTradicional : null,
+            },
+        };
 
-                            const nomeSorteada = nomeDancaSorteada(
-                                tipo,
-                                sorteioAtual?.resultadoSorteio
-                            );
+        /**
+         * ======================================================
+         * ✅ INJETAR metaDanca nos quesitos de DANÇA
+         * ======================================================
+         */
+        const provaPraticaComMeta = provaPratica.map((pp) => ({
+            ...pp,
+            blocosProvas: pp.blocosProvas.map((bloco) => ({
+                ...bloco,
+                quesitos: bloco.quesitos.map((q) => {
+                    const nome = (q.nomeQuesito ?? "").toLowerCase();
 
-                            const metaDanca = {
-                                tipo,
-                                possuiSorteio,
-                                sorteada: possuiSorteio ? nomeSorteada : null,
-                                escolhidas: !possuiSorteio ? ctx.escolhidas : null,
-                                textoExibicao: possuiSorteio
-                                    ? nomeSorteada
-                                        ? `Dança sorteada: ${nomeSorteada}`
-                                        : "Dança sorteada: (não realizada)"
-                                    : ctx.escolhidas?.length
-                                        ? `Dança escolhida: ${ctx.escolhidas.join(", ")}`
-                                        : "Dança escolhida: (não informada)",
-                            };
+                    const isSalao =
+                        nome.includes("dança gaúcha de salão") ||
+                        nome.includes("danca gaucha de salao");
 
-                            return { ...q, metaDanca };
-                        }),
-                    })),
-                };
-            })
+                    const isFolclorica =
+                        nome.includes("dança folclórica tradicional") ||
+                        nome.includes("danca folclorica tradicional");
+
+                    if (!isSalao && !isFolclorica) return q;
+
+                    const tipo: "DANCA_DE_SALAO" | "DANCA_TRADICIONAL" = isSalao
+                        ? "DANCA_DE_SALAO"
+                        : "DANCA_TRADICIONAL";
+
+                    const nomeSorteada = possuiSorteio
+                        ? (isSalao ? contextoDancas.salao.sorteada : contextoDancas.tradicional.sorteada)
+                        : null;
+
+                    const escolhidas = !possuiSorteio
+                        ? (isSalao ? contextoDancas.salao.escolhidas : contextoDancas.tradicional.escolhidas)
+                        : null;
+
+                    const textoExibicao = possuiSorteio
+                        ? nomeSorteada
+                            ? `Dança sorteada: ${nomeSorteada}`
+                            : "Dança sorteada: (não realizada)"
+                        : escolhidas?.length
+                            ? `Dança escolhida: ${escolhidas.join(", ")}`
+                            : "Dança escolhida: (não informada)";
+
+                    const metaDanca = {
+                        tipo,
+                        possuiSorteio,
+                        sorteada: nomeSorteada,
+                        escolhidas,
+                        textoExibicao,
+                    };
+
+                    return { ...q, metaDanca };
+                }),
+            })),
+        }));
+
+        console.dir(
+            { possuiSorteio, contextoDancas, provaPraticaComMeta },
+            { depth: null, colors: true }
         );
 
         return {
