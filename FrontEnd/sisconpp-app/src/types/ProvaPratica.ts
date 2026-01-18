@@ -11,6 +11,14 @@ export interface SubQuesitos {
     nomeSubquesito: string;
     notaSubequesito: number;
     quesitoId: number;
+    subGrupo?: SubGrupoVivencia | null;
+}
+
+export enum SubGrupoVivencia {
+    APRESENTACAO_PASTA = "APRESENTACAO_PASTA",
+    APROVEITAMENTO_TEMPO = "APROVEITAMENTO_TEMPO",
+    COLABORACAO_PROMOCOES = "COLABORACAO_PROMOCOES",
+    PARTICIPACAO_EVENTOS = "PARTICIPACAO_EVENTOS"
 }
 
 export interface Quesitos {

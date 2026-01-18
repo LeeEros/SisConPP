@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
-import { QuesitoDTO } from "../../types/Avaliacao";
+import { QuesitoDTO, SubGrupoVivencia } from "../../types/Avaliacao";
 import SubQuesitoInput from "./SubQuesitoinput";
 
 interface Props {
@@ -9,6 +9,17 @@ interface Props {
   comentarios: Record<number, string>;
   onChangeNota: (subQuesitoId: number, nota: number) => void;
   onChangeComentario?: (quesitoId: number, comentario: string) => void;
+}
+
+const LABEL_SUBGRUPO: Record<SubGrupoVivencia, string> = {
+  [SubGrupoVivencia.APRESENTACAO_PASTA]: "Apresentação da pasta de vivência",
+  [SubGrupoVivencia.APROVEITAMENTO_TEMPO]: "Aproveitamento do tempo no movimento tradicionalista",
+  [SubGrupoVivencia.COLABORACAO_PROMOCOES]: "Colaboração na organização de promoções tradicionalistas",
+  [SubGrupoVivencia.PARTICIPACAO_EVENTOS]: "Participação ou frequência em eventos tradicionalistas",
+};
+
+function isVivenciaQuesito(nome?: string) {
+  return (nome ?? "").toLowerCase().includes("vivência tradicionalista");
 }
 
 export default function QuesitoCard({
@@ -23,10 +34,27 @@ export default function QuesitoCard({
   const handleComentarioChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
     setComentario(value);
-    if (onChangeComentario) {
-      onChangeComentario(quesito.idQuesito, value);
-    }
+    onChangeComentario?.(quesito.idQuesito, value);
   };
+
+  const isVivencia = isVivenciaQuesito(quesito.nomeQuesito);
+  const grupos = useMemo(() => {
+    const acc = quesito.subQuesitos.reduce((map, sub) => {
+      const key = (sub.subGrupo ?? "SEM_SUBGRUPO") as SubGrupoVivencia | "SEM_SUBGRUPO";
+      (map[key] ??= []).push(sub);
+      return map;
+    }, {} as Record<SubGrupoVivencia | "SEM_SUBGRUPO", typeof quesito.subQuesitos>);
+
+    return acc;
+  }, [quesito.subQuesitos]);
+
+  const ordem: (SubGrupoVivencia | "SEM_SUBGRUPO")[] = [
+    SubGrupoVivencia.APRESENTACAO_PASTA,
+    SubGrupoVivencia.APROVEITAMENTO_TEMPO,
+    SubGrupoVivencia.COLABORACAO_PROMOCOES,
+    SubGrupoVivencia.PARTICIPACAO_EVENTOS,
+    "SEM_SUBGRUPO",
+  ];
 
   return (
     <div className="border rounded-lg bg-gray-50">
@@ -35,18 +63,14 @@ export default function QuesitoCard({
         className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50"
       >
         <div className="flex flex-col">
-          <span className="font-semibold text-gray-800">
-            {quesito.nomeQuesito}
-          </span>
+          <span className="font-semibold text-gray-800">{quesito.nomeQuesito}</span>
           <span className="text-xs text-gray-500">
             Nota Máx: {quesito.notaMaximaQuesito} pts
           </span>
         </div>
 
         <div
-          className={`p-2 rounded-lg ${open
-            ? "bg-primary text-white"
-            : "bg-gray-200 text-gray-600 hover:bg-gray-300"
+          className={`p-2 rounded-lg ${open ? "bg-primary text-white" : "bg-gray-200 text-gray-600 hover:bg-gray-300"
             }`}
         >
           {open ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
@@ -56,19 +80,47 @@ export default function QuesitoCard({
       {open && (
         <div className="px-4 pb-4 space-y-3 bg-gray-50">
           {quesito.subQuesitos.length === 0 && (
-            <p className="text-sm text-gray-400 italic">
-              Nenhum subquesito cadastrado.
-            </p>
+            <p className="text-sm text-gray-400 italic">Nenhum subquesito cadastrado.</p>
           )}
 
-          {quesito.subQuesitos.map((sub) => (
-            <SubQuesitoInput
-              key={sub.idSubequestios}
-              subQuesito={sub}
-              value={notas[sub.idSubequestios] ?? ""}
-              onChange={onChangeNota}
-            />
-          ))}
+          {/* ✅ Render normal quando NÃO for Vivência */}
+          {!isVivencia &&
+            quesito.subQuesitos.map((sub) => (
+              <SubQuesitoInput
+                key={sub.idSubequestios}
+                subQuesito={sub}
+                value={notas[sub.idSubequestios] ?? ""}
+                onChange={onChangeNota}
+              />
+            ))}
+
+          {/* ✅ Render agrupado quando for Vivência */}
+          {isVivencia &&
+            ordem.map((g) => {
+              const items = grupos[g];
+              if (!items || items.length === 0) return null;
+
+              const titulo = g === "SEM_SUBGRUPO" ? "Sem subgrupo" : LABEL_SUBGRUPO[g];
+
+              return (
+                <div key={String(g)} className="space-y-2">
+                  <div className="px-1 pt-2">
+                    <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
+                      {titulo}
+                    </span>
+                  </div>
+
+                  {items.map((sub) => (
+                    <SubQuesitoInput
+                      key={sub.idSubequestios}
+                      subQuesito={sub}
+                      value={notas[sub.idSubequestios] ?? ""}
+                      onChange={onChangeNota}
+                    />
+                  ))}
+                </div>
+              );
+            })}
 
           <div className="mt-4">
             <label className="block text-sm font-semibold text-gray-700 mb-2">

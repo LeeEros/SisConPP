@@ -38,7 +38,7 @@ export interface CriarAvaliacaoPayload {
   }[]
 }
 
-export interface CCriarAvaliacaoTeoricaPayload{
+export interface CriarAvaliacaoTeoricaPayload{
     candidatoId: number;
     avaliadorId: number;
     provaTeoricaId: number;
@@ -113,4 +113,12 @@ export interface SubQuesitoDTO {
   idSubequestios: number;
   nomeSubquesito: string;
   notaSubequesito: number;
+  subGrupo?: SubGrupoVivencia;
+}
+
+export enum SubGrupoVivencia {
+  APRESENTACAO_PASTA = "APRESENTACAO_PASTA",
+  APROVEITAMENTO_TEMPO = "APROVEITAMENTO_TEMPO",
+  COLABORACAO_PROMOCOES = "COLABORACAO_PROMOCOES",
+  PARTICIPACAO_EVENTOS = "PARTICIPACAO_EVENTOS",
 }

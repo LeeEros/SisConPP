@@ -1,0 +1,5 @@
+-- CreateEnum
+CREATE TYPE "VivenciaSubGrupo" AS ENUM ('APRESENTACAO_PASTA', 'APROVEITAMENTO_TEMPO', 'COLABORACAO_PROMOCOES', 'PARTICIPACAO_EVENTOS');
+
+-- AlterTable
+ALTER TABLE "Quesitos" ADD COLUMN     "subGrupo" "VivenciaSubGrupo";
