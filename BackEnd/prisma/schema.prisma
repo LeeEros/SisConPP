@@ -220,6 +220,7 @@ model Avaliacao {
   FichaCandidato        FichaCandidato? @relation(fields: [fichaCandidatoIdFicha], references: [idFicha])
 
   quesitosAvaliados AvaliacaoQuesito[]
+  recursos          Recurso[]
 }
 
 model AvaliacaoQuesito {
@@ -315,24 +316,36 @@ model SubQuesitos {
 }
 
 model Recurso {
-  idRecurso     Int      @id @default(autoincrement())
+  idRecurso     Int           @id @default(autoincrement())
   nomeRecurso   String
   justificativa String
-  status        Boolean
-  dataRecurso   DateTime @default(now())
+  status        StatusRecurso @default(PENDENTE)
+  dataRecurso   DateTime      @default(now())
   arquivos      Bytes
+
+  avaliacaoId Int
+  Avaliacao   Avaliacao @relation(fields: [avaliacaoId], references: [idAvalicao])
 
   candidato Int
   Candidato Candidato @relation(fields: [candidato], references: [idCandidato])
-  avaliador Int
-  Usuario   Usuario   @relation(fields: [avaliador], references: [idUsuario])
 
-  quesitoRecurso             Int
-  Quesito                    Quesitos      @relation(fields: [quesitoRecurso], references: [idQuesito])
-  ProvaTeorica               ProvaTeorica? @relation(fields: [provaTeoricaIdprovaTeorica], references: [idprovaTeorica])
+  avaliador Int
+  Usuario   Usuario @relation(fields: [avaliador], references: [idUsuario])
+
+  quesitoRecurso Int
+  Quesito        Quesitos @relation(fields: [quesitoRecurso], references: [idQuesito])
+
   provaTeoricaIdprovaTeorica Int?
-  ProvaPratica               ProvaPratica? @relation(fields: [provaPraticaIdProvaPratica], references: [idProvaPratica])
+  ProvaTeorica               ProvaTeorica? @relation(fields: [provaTeoricaIdprovaTeorica], references: [idprovaTeorica])
+
   provaPraticaIdProvaPratica Int?
+  ProvaPratica               ProvaPratica? @relation(fields: [provaPraticaIdProvaPratica], references: [idProvaPratica])
+}
+
+enum StatusRecurso {
+  PENDENTE
+  DEFERIDO
+  INDEFERIDO
 }
 
 model Danca {

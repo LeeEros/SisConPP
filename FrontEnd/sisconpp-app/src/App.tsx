@@ -17,6 +17,7 @@ import ProvaTeoricaCriacao from "./pages/ProvaTeoricaCriacao";
 import AvaliacaoPage from "./pages/AvaliacaoPratica";
 import AvaliacaoTeoricaPage from "./pages/AvaliacaoTeorica";
 import RelatoriosPage from "./pages/Relatorios";
+import RecursosPage from "./pages/Recursos";
 
 function App() {
 
@@ -41,6 +42,7 @@ function App() {
           <Route path={RoutesPaths.avaliacaoPratica} element={<AvaliacaoPage/>} />
           <Route path={RoutesPaths.AvaliacaoTeorica} element={<AvaliacaoTeoricaPage/>}/>
           <Route path={RoutesPaths.Relatoriois} element={<RelatoriosPage/>} />
+          <Route path={RoutesPaths.Recursos} element={<RecursosPage/>} />
 
         </Routes>
         <ToastContainer

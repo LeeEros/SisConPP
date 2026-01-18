@@ -10,6 +10,7 @@ import { BlocoProva, ProvaPratica, Quesitos, SubQuesitos } from '../types/ProvaP
 import { ProvaTeorica, ProvaTeoricaF } from '../types/ProvaTeorica';
 import { RelatorioGeralCandidatoDTO, RelatorioRankingDTO, RelatorioIndividualDTO, RelatorioCategoriaDTO } from '../types/Relatorios';
 import { CriarAvaliacaoCompletaDTO } from '../types/Avaliacao';
+import { RecursoFormData, StatusRecurso } from "../types/Recurso";
 
 // ---- CONFIGURAÇÃO DO AXIOS ----
 export const api = axios.create({
@@ -374,5 +375,26 @@ export async function getRelatorioPorCategoriaConcurso(
 ): Promise<RelatorioCategoriaDTO[]> {
   const response = await api.get<RelatorioCategoriaDTO[]>(`/relatorios/relatorioDetalhado/${categoriaId}/${concursoIdConcurso}`);
   console.log(response);
+  return response.data;
+}
+
+//---- Recurso ----
+
+export async function solicitarRecurso(formData: RecursoFormData){
+  const { data } = await api.post("/recurso", formData);
+  return data;
+}
+
+export async function listarRecursos(){
+  const response = await api.get("/recurso");
+  return response.data;
+}
+
+export const alterarStatusRecurso = async (idRecurso: number, status: StatusRecurso) => {
+  return await api.put(`/recurso/${idRecurso}`, { status });
+}
+
+export async function listarQuesitosAvaliadosPorCandidatoEAvaliador(candidatoId: number, avaliadorId: number) {
+  const response = await api.get(`/recurso/candidato/${candidatoId}/avaliador/${avaliadorId}`);
   return response.data;
 }

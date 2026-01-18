@@ -65,134 +65,134 @@ async function main() {
     });
     console.log("✅ Bloco Prova criados com sucesso!");
 
-    // // =========================
-    // // QUESITOS
-    // // =========================
+    // =========================
+    // QUESITOS
+    // =========================
 
-    // await prisma.quesitos.createMany({
-    //     data: [
-    //         //Prova Oral Prenda Mirim 
-    //         { nomeQuesito: "Vivência Tradicionalista Gaúcha", notaMaximaQuesito: 33, opcional: false, blocoProvaIdBloco: 1 },
-    //         { nomeQuesito: "Projeto Principal - Executado na Atual Gestão", notaMaximaQuesito: 10, opcional: false, blocoProvaIdBloco: 1 },
-    //         { nomeQuesito: "Outros Projetos e Ações Executados", notaMaximaQuesito: 5, opcional: false, blocoProvaIdBloco: 1 },
-    //         { nomeQuesito: "Comunicação Oral", notaMaximaQuesito: 12, opcional: false, blocoProvaIdBloco: 1 },
-    //         { nomeQuesito: "Desenvoltura e Expressão", notaMaximaQuesito: 5, opcional: false, blocoProvaIdBloco: 1 },
-    //         { nomeQuesito: "Indumentária", notaMaximaQuesito: -5, opcional: false, blocoProvaIdBloco: 1 },
+    await prisma.quesitos.createMany({
+        data: [
+            //Prova Oral Prenda Mirim 
+            { nomeQuesito: "Vivência Tradicionalista Gaúcha", notaMaximaQuesito: 33, opcional: false, blocoProvaIdBloco: 1 },
+            { nomeQuesito: "Projeto Principal - Executado na Atual Gestão", notaMaximaQuesito: 10, opcional: false, blocoProvaIdBloco: 1 },
+            { nomeQuesito: "Outros Projetos e Ações Executados", notaMaximaQuesito: 5, opcional: false, blocoProvaIdBloco: 1 },
+            { nomeQuesito: "Comunicação Oral", notaMaximaQuesito: 12, opcional: false, blocoProvaIdBloco: 1 },
+            { nomeQuesito: "Desenvoltura e Expressão", notaMaximaQuesito: 5, opcional: false, blocoProvaIdBloco: 1 },
+            { nomeQuesito: "Indumentária", notaMaximaQuesito: -5, opcional: false, blocoProvaIdBloco: 1 },
 
-    //         //Prova Artística Prenda Mirim
-    //         { nomeQuesito: "Dança Gaúcha de Salão", notaMaximaQuesito: 5, opcional: false, blocoProvaIdBloco: 2 },
-    //         { nomeQuesito: "Artesanato", notaMaximaQuesito: 6, opcional: false, blocoProvaIdBloco: 2 },
-    //         { nomeQuesito: "Declamação", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 2 },
-    //         { nomeQuesito: "Intérprete Vocal/Cantar", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 2 },
-    //         { nomeQuesito: "Execução Instrumental", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 2 },
-    //         { nomeQuesito: "Dança Folclórica Tradicional", notaMaximaQuesito: 5, opcional: true, blocoProvaIdBloco: 2 },
-    //         { nomeQuesito: "Contar uma Lenda", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 2 },
-    //         { nomeQuesito: "Contar Causo", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 2 },
-    //         { nomeQuesito: "Prova Campeira Regulamentada", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 2 },
-    //         { nomeQuesito: "Encilhar", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 2 },
-    //         { nomeQuesito: "Desenvolura e expressão", notaMaximaQuesito: 2, opcional: false, blocoProvaIdBloco: 2 },
+            //Prova Artística Prenda Mirim
+            { nomeQuesito: "Dança Gaúcha de Salão", notaMaximaQuesito: 5, opcional: false, blocoProvaIdBloco: 2 },
+            { nomeQuesito: "Artesanato", notaMaximaQuesito: 6, opcional: false, blocoProvaIdBloco: 2 },
+            { nomeQuesito: "Declamação", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 2 },
+            { nomeQuesito: "Intérprete Vocal/Cantar", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 2 },
+            { nomeQuesito: "Execução Instrumental", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 2 },
+            { nomeQuesito: "Dança Folclórica Tradicional", notaMaximaQuesito: 5, opcional: true, blocoProvaIdBloco: 2 },
+            { nomeQuesito: "Contar uma Lenda", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 2 },
+            { nomeQuesito: "Contar Causo", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 2 },
+            { nomeQuesito: "Prova Campeira Regulamentada", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 2 },
+            { nomeQuesito: "Encilhar", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 2 },
+            { nomeQuesito: "Desenvolura e expressão", notaMaximaQuesito: 2, opcional: false, blocoProvaIdBloco: 2 },
 
-    //         //Prova Oral Peão Mirim 
-    //         { nomeQuesito: "Vivência Tradicionalista Gaúcha", notaMaximaQuesito: 33, opcional: false, blocoProvaIdBloco: 3 },
-    //         { nomeQuesito: "Projeto Principal - Executado na Atual Gestão", notaMaximaQuesito: 10, opcional: false, blocoProvaIdBloco: 3 },
-    //         { nomeQuesito: "Outros Projetos e Ações Executados", notaMaximaQuesito: 5, opcional: false, blocoProvaIdBloco: 3 },
-    //         { nomeQuesito: "Comunicação Oral", notaMaximaQuesito: 12, opcional: false, blocoProvaIdBloco: 3 },
-    //         { nomeQuesito: "Desenvoltura e Expressão", notaMaximaQuesito: 5, opcional: false, blocoProvaIdBloco: 3 },
-    //         { nomeQuesito: "Indumentária", notaMaximaQuesito: -5, opcional: false, blocoProvaIdBloco: 3 },
+            //Prova Oral Peão Mirim 
+            { nomeQuesito: "Vivência Tradicionalista Gaúcha", notaMaximaQuesito: 33, opcional: false, blocoProvaIdBloco: 3 },
+            { nomeQuesito: "Projeto Principal - Executado na Atual Gestão", notaMaximaQuesito: 10, opcional: false, blocoProvaIdBloco: 3 },
+            { nomeQuesito: "Outros Projetos e Ações Executados", notaMaximaQuesito: 5, opcional: false, blocoProvaIdBloco: 3 },
+            { nomeQuesito: "Comunicação Oral", notaMaximaQuesito: 12, opcional: false, blocoProvaIdBloco: 3 },
+            { nomeQuesito: "Desenvoltura e Expressão", notaMaximaQuesito: 5, opcional: false, blocoProvaIdBloco: 3 },
+            { nomeQuesito: "Indumentária", notaMaximaQuesito: -5, opcional: false, blocoProvaIdBloco: 3 },
 
-    //         //Prova Artística Peão Mirim
-    //         { idQuesito: 7, nomeQuesito: "Dança Gaúcha de Salão", notaMaximaQuesito: 4, opcional: false, blocoProvaIdBloco: 4 },
-    //         { idQuesito: 9, nomeQuesito: "Declamação", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 4 },
-    //         { idQuesito: 10, nomeQuesito: "Intérprete Vocal/Cantar", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 4 },
-    //         { idQuesito: 11, nomeQuesito: "Execução Instrumental", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 4 },
-    //         { idQuesito: 12, nomeQuesito: "Dança Folclórica Tradicional", notaMaximaQuesito: 5, opcional: true, blocoProvaIdBloco: 4 },
-    //         { idQuesito: 13, nomeQuesito: "Contar uma Lenda", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 4 },
-    //         { idQuesito: 14, nomeQuesito: "Contar Causo", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 4 },
-    //         { idQuesito: 15, nomeQuesito: "Chula", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 4 },
-    //         { idQuesito: 17, nomeQuesito: "Desenvolura e expressão", notaMaximaQuesito: 2, opcional: false, blocoProvaIdBloco: 4 },
+            //Prova Artística Peão Mirim
+            { nomeQuesito: "Dança Gaúcha de Salão", notaMaximaQuesito: 4, opcional: false, blocoProvaIdBloco: 4 },
+            { nomeQuesito: "Declamação", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 4 },
+            { nomeQuesito: "Intérprete Vocal/Cantar", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 4 },
+            { nomeQuesito: "Execução Instrumental", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 4 },
+            { nomeQuesito: "Dança Folclórica Tradicional", notaMaximaQuesito: 5, opcional: true, blocoProvaIdBloco: 4 },
+            { nomeQuesito: "Contar uma Lenda", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 4 },
+            { nomeQuesito: "Contar Causo", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 4 },
+            { nomeQuesito: "Chula", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 4 },
+            { nomeQuesito: "Desenvolura e expressão", notaMaximaQuesito: 2, opcional: false, blocoProvaIdBloco: 4 },
 
-    //         //Prova Campeira Peão Mirim
-    //         { idQuesito: 18, nomeQuesito: "Artesanato", notaMaximaQuesito: 5, opcional: false, blocoProvaIdBloco: 5 },
-    //         { idQuesito: 19, nomeQuesito: "Laçar a cavalo ou vaca parada", notaMaximaQuesito: 4, opcional: true, blocoProvaIdBloco: 5 },
-    //         { idQuesito: 20, nomeQuesito: "Prova de rédeas", notaMaximaQuesito: 4, opcional: true, blocoProvaIdBloco: 5 },
-    //         { idQuesito: 21, nomeQuesito: "Reconhecimento de pelagem", notaMaximaQuesito: 4, opcional: true, blocoProvaIdBloco: 5 },
-    //         { idQuesito: 22, nomeQuesito: "Reconhecimento das peças da encilha", notaMaximaQuesito: 4, opcional: true, blocoProvaIdBloco: 5 },
-    //         { idQuesito: 23, nomeQuesito: "Encilhar", notaMaximaQuesito: 4, opcional: true, blocoProvaIdBloco: 5 },
-    //         { idQuesito: 24, nomeQuesito: "Preparar chimarrão", notaMaximaQuesito: 4, opcional: true, blocoProvaIdBloco: 5 },
-    //         { idQuesito: 25, nomeQuesito: "Nó de lenço", notaMaximaQuesito: 4, opcional: true, blocoProvaIdBloco: 5 },
+            //Prova Campeira Peão Mirim
+            { nomeQuesito: "Artesanato", notaMaximaQuesito: 5, opcional: false, blocoProvaIdBloco: 5 },
+            { nomeQuesito: "Laçar a cavalo ou vaca parada", notaMaximaQuesito: 4, opcional: true, blocoProvaIdBloco: 5 },
+            { nomeQuesito: "Prova de rédeas", notaMaximaQuesito: 4, opcional: true, blocoProvaIdBloco: 5 },
+            { nomeQuesito: "Reconhecimento de pelagem", notaMaximaQuesito: 4, opcional: true, blocoProvaIdBloco: 5 },
+            { nomeQuesito: "Reconhecimento das peças da encilha", notaMaximaQuesito: 4, opcional: true, blocoProvaIdBloco: 5 },
+            { nomeQuesito: "Encilhar", notaMaximaQuesito: 4, opcional: true, blocoProvaIdBloco: 5 },
+            { nomeQuesito: "Preparar chimarrão", notaMaximaQuesito: 4, opcional: true, blocoProvaIdBloco: 5 },
+            { nomeQuesito: "Nó de lenço", notaMaximaQuesito: 4, opcional: true, blocoProvaIdBloco: 5 },
 
-    //         //Prova Oral Prenda Juvenil, Adulta, Veterana e Xirua
-    //         { idQuesito: 26, nomeQuesito: "Vivência Tradicionalista Gaúcha", notaMaximaQuesito: 33, opcional: false, blocoProvaIdBloco: 6 },
-    //         { idQuesito: 27, nomeQuesito: "Projeto Principal - Executado na Atual Gestão", notaMaximaQuesito: 10, opcional: false, blocoProvaIdBloco: 6 },
-    //         { idQuesito: 28, nomeQuesito: "Outros Projetos e Ações Executados", notaMaximaQuesito: 5, opcional: false, blocoProvaIdBloco: 6 },
-    //         { idQuesito: 29, nomeQuesito: "Pesquisa Histórica", notaMaximaQuesito: 12, opcional: false, blocoProvaIdBloco: 6 },
-    //         { idQuesito: 30, nomeQuesito: "Desenvoltura e Expressão", notaMaximaQuesito: 3, opcional: false, blocoProvaIdBloco: 6 },
-    //         { idQuesito: 31, nomeQuesito: "Indumentária", notaMaximaQuesito: -5, opcional: false, blocoProvaIdBloco: 6 },
+            //Prova Oral Prenda Juvenil, Adulta, Veterana e Xirua
+            { nomeQuesito: "Vivência Tradicionalista Gaúcha", notaMaximaQuesito: 33, opcional: false, blocoProvaIdBloco: 6 },
+            { nomeQuesito: "Projeto Principal - Executado na Atual Gestão", notaMaximaQuesito: 10, opcional: false, blocoProvaIdBloco: 6 },
+            { nomeQuesito: "Outros Projetos e Ações Executados", notaMaximaQuesito: 5, opcional: false, blocoProvaIdBloco: 6 },
+            { nomeQuesito: "Pesquisa Histórica", notaMaximaQuesito: 12, opcional: false, blocoProvaIdBloco: 6 },
+            { nomeQuesito: "Desenvoltura e Expressão", notaMaximaQuesito: 3, opcional: false, blocoProvaIdBloco: 6 },
+            { nomeQuesito: "Indumentária", notaMaximaQuesito: -5, opcional: false, blocoProvaIdBloco: 6 },
 
-    //         //Prova Artística Prenda Juvenil, Adulta, Veterana e Xirua
-    //         { idQuesito: 32, nomeQuesito: "Dança Gaúcha de Salão", notaMaximaQuesito: 5, opcional: false, blocoProvaIdBloco: 7 },
-    //         { idQuesito: 34, nomeQuesito: "Declamação", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 7 },
-    //         { idQuesito: 35, nomeQuesito: "Intérprete Vocal/Cantar", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 7 },
-    //         { idQuesito: 36, nomeQuesito: "Execução Instrumental", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 7 },
-    //         { idQuesito: 37, nomeQuesito: "Dança Folclórica Tradicional", notaMaximaQuesito: 5, opcional: true, blocoProvaIdBloco: 7 },
-    //         { idQuesito: 38, nomeQuesito: "Contar uma Lenda", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 7 },
-    //         { idQuesito: 39, nomeQuesito: "Contar Causo", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 7 },
-    //         { idQuesito: 40, nomeQuesito: "Prova Campeira Regulamentada", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 7 },
-    //         { idQuesito: 41, nomeQuesito: "Prova Esportiva Regulamentada", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 7 },
-    //         { idQuesito: 42, nomeQuesito: "Encilhar", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 7 },
-    //         { idQuesito: 43, nomeQuesito: "Desenvolura e expressão", notaMaximaQuesito: 4, opcional: false, blocoProvaIdBloco: 7 },
+            //Prova Artística Prenda Juvenil, Adulta, Veterana e Xirua
+            { nomeQuesito: "Dança Gaúcha de Salão", notaMaximaQuesito: 5, opcional: false, blocoProvaIdBloco: 7 },
+            { nomeQuesito: "Declamação", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 7 },
+            { nomeQuesito: "Intérprete Vocal/Cantar", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 7 },
+            { nomeQuesito: "Execução Instrumental", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 7 },
+            { nomeQuesito: "Dança Folclórica Tradicional", notaMaximaQuesito: 5, opcional: true, blocoProvaIdBloco: 7 },
+            { nomeQuesito: "Contar uma Lenda", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 7 },
+            { nomeQuesito: "Contar Causo", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 7 },
+            { nomeQuesito: "Prova Campeira Regulamentada", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 7 },
+            { nomeQuesito: "Prova Esportiva Regulamentada", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 7 },
+            { nomeQuesito: "Encilhar", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 7 },
+            { nomeQuesito: "Desenvolura e expressão", notaMaximaQuesito: 4, opcional: false, blocoProvaIdBloco: 7 },
 
-    //         //Prova Dotes Prenda Juvenil, Adulta, Veterana e Xirua
-    //         { idQuesito: 44, nomeQuesito: "Culinária", notaMaximaQuesito: 6, opcional: false, blocoProvaIdBloco: 8 },
-    //         { idQuesito: 45, nomeQuesito: "Artesanato", notaMaximaQuesito: 6, opcional: false, blocoProvaIdBloco: 8 },
+            //Prova Dotes Prenda Juvenil, Adulta, Veterana e Xirua
+            { nomeQuesito: "Culinária", notaMaximaQuesito: 6, opcional: false, blocoProvaIdBloco: 8 },
+            { nomeQuesito: "Artesanato", notaMaximaQuesito: 6, opcional: false, blocoProvaIdBloco: 8 },
 
-    //         //Prova Oral Peão Juvenil, Adulto, Veterano e Xiru
-    //         { idQuesito: 46, nomeQuesito: "Vivência Tradicionalista Gaúcha", notaMaximaQuesito: 33, opcional: false, blocoProvaIdBloco: 9 },
-    //         { idQuesito: 47, nomeQuesito: "Projeto Principal - Executado na Atual Gestão", notaMaximaQuesito: 10, opcional: false, blocoProvaIdBloco: 9 },
-    //         { idQuesito: 48, nomeQuesito: "Outros Projetos e Ações Executados", notaMaximaQuesito: 5, opcional: false, blocoProvaIdBloco: 9 },
-    //         { idQuesito: 49, nomeQuesito: "Pesquisa Histórica", notaMaximaQuesito: 10, opcional: false, blocoProvaIdBloco: 9 },
-    //         { idQuesito: 50, nomeQuesito: "Desenvoltura e Expressão", notaMaximaQuesito: 4, opcional: false, blocoProvaIdBloco: 9 },
-    //         { idQuesito: 51, nomeQuesito: "Indumentária", notaMaximaQuesito: -5, opcional: false, blocoProvaIdBloco: 9 },
+            //Prova Oral Peão Juvenil, Adulto, Veterano e Xiru
+            { nomeQuesito: "Vivência Tradicionalista Gaúcha", notaMaximaQuesito: 33, opcional: false, blocoProvaIdBloco: 9 },
+            { nomeQuesito: "Projeto Principal - Executado na Atual Gestão", notaMaximaQuesito: 10, opcional: false, blocoProvaIdBloco: 9 },
+            { nomeQuesito: "Outros Projetos e Ações Executados", notaMaximaQuesito: 5, opcional: false, blocoProvaIdBloco: 9 },
+            { nomeQuesito: "Pesquisa Histórica", notaMaximaQuesito: 10, opcional: false, blocoProvaIdBloco: 9 },
+            { nomeQuesito: "Desenvoltura e Expressão", notaMaximaQuesito: 4, opcional: false, blocoProvaIdBloco: 9 },
+            { nomeQuesito: "Indumentária", notaMaximaQuesito: -5, opcional: false, blocoProvaIdBloco: 9 },
 
-    //         //Prova Artística Peão Juvenil, Adulto, Veterano e Xiru
-    //         { idQuesito: 52, nomeQuesito: "Dança Gaúcha de Salão", notaMaximaQuesito: 4, opcional: false, blocoProvaIdBloco: 10 },
-    //         { idQuesito: 54, nomeQuesito: "Declamação", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 10 },
-    //         { idQuesito: 55, nomeQuesito: "Intérprete Vocal/Cantar", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 10 },
-    //         { idQuesito: 56, nomeQuesito: "Execução Instrumental", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 10 },
-    //         { idQuesito: 57, nomeQuesito: "Dança Folclórica Tradicional", notaMaximaQuesito: 5, opcional: true, blocoProvaIdBloco: 10 },
-    //         { idQuesito: 58, nomeQuesito: "Contar uma Lenda", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 10 },
-    //         { idQuesito: 59, nomeQuesito: "Contar Causo", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 10 },
-    //         { idQuesito: 60, nomeQuesito: "Chula", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 10 },
-    //         { idQuesito: 61, nomeQuesito: "Prova Esportiva Regulamentada", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 10 },
-    //         { idQuesito: 63, nomeQuesito: "Desenvolura e expressão", notaMaximaQuesito: 3, opcional: false, blocoProvaIdBloco: 10 },
+            //Prova Artística Peão Juvenil, Adulto, Veterano e Xiru
+            { nomeQuesito: "Dança Gaúcha de Salão", notaMaximaQuesito: 4, opcional: false, blocoProvaIdBloco: 10 },
+            { nomeQuesito: "Declamação", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 10 },
+            { nomeQuesito: "Intérprete Vocal/Cantar", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 10 },
+            { nomeQuesito: "Execução Instrumental", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 10 },
+            { nomeQuesito: "Dança Folclórica Tradicional", notaMaximaQuesito: 5, opcional: true, blocoProvaIdBloco: 10 },
+            { nomeQuesito: "Contar uma Lenda", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 10 },
+            { nomeQuesito: "Contar Causo", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 10 },
+            { nomeQuesito: "Chula", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 10 },
+            { nomeQuesito: "Prova Esportiva Regulamentada", notaMaximaQuesito: 6, opcional: true, blocoProvaIdBloco: 10 },
+            { nomeQuesito: "Desenvolura e expressão", notaMaximaQuesito: 3, opcional: false, blocoProvaIdBloco: 10 },
 
-    //         //Prova Campeira Peão Juvenil, Adulto, Veterano e Xiru
-    //         { idQuesito: 64, nomeQuesito: "Encilhar", notaMaximaQuesito: 6, opcional: false, blocoProvaIdBloco: 11 },
-    //         { idQuesito: 65, nomeQuesito: "Artesanato", notaMaximaQuesito: 5, opcional: false, blocoProvaIdBloco: 11 },
-    //         { idQuesito: 66, nomeQuesito: "Laçar a cavalo ou vaca parada", notaMaximaQuesito: 4, opcional: true, blocoProvaIdBloco: 11 },
-    //         { idQuesito: 67, nomeQuesito: "Prova de rédeas", notaMaximaQuesito: 4, opcional: true, blocoProvaIdBloco: 11 },
-    //         { idQuesito: 68, nomeQuesito: "Preparar Churrasco", notaMaximaQuesito: 4, opcional: true, blocoProvaIdBloco: 11 },
-    //         { idQuesito: 69, nomeQuesito: "Preparar chimarrão", notaMaximaQuesito: 4, opcional: true, blocoProvaIdBloco: 11 },
-    //         { idQuesito: 70, nomeQuesito: "Charquear", notaMaximaQuesito: 4, opcional: true, blocoProvaIdBloco: 11 },
-    //         { idQuesito: 71, nomeQuesito: "Tosar", notaMaximaQuesito: 4, opcional: true, blocoProvaIdBloco: 11 },
-    //         { idQuesito: 72, nomeQuesito: "Tosquiar", notaMaximaQuesito: 4, opcional: true, blocoProvaIdBloco: 11 },
-    //         { idQuesito: 73, nomeQuesito: "Culinária Campeira", notaMaximaQuesito: 4, opcional: true, blocoProvaIdBloco: 11 },
-    //     ]
-    // });
-    // console.log("✅ Quesitos criados com sucesso!"); 
+            //Prova Campeira Peão Juvenil, Adulto, Veterano e Xiru
+            { nomeQuesito: "Encilhar", notaMaximaQuesito: 6, opcional: false, blocoProvaIdBloco: 11 },
+            { nomeQuesito: "Artesanato", notaMaximaQuesito: 5, opcional: false, blocoProvaIdBloco: 11 },
+            { nomeQuesito: "Laçar a cavalo ou vaca parada", notaMaximaQuesito: 4, opcional: true, blocoProvaIdBloco: 11 },
+            { nomeQuesito: "Prova de rédeas", notaMaximaQuesito: 4, opcional: true, blocoProvaIdBloco: 11 },
+            { nomeQuesito: "Preparar Churrasco", notaMaximaQuesito: 4, opcional: true, blocoProvaIdBloco: 11 },
+            { nomeQuesito: "Preparar chimarrão", notaMaximaQuesito: 4, opcional: true, blocoProvaIdBloco: 11 },
+            { nomeQuesito: "Charquear", notaMaximaQuesito: 4, opcional: true, blocoProvaIdBloco: 11 },
+            { nomeQuesito: "Tosar", notaMaximaQuesito: 4, opcional: true, blocoProvaIdBloco: 11 },
+            { nomeQuesito: "Tosquiar", notaMaximaQuesito: 4, opcional: true, blocoProvaIdBloco: 11 },
+            { nomeQuesito: "Culinária Campeira", notaMaximaQuesito: 4, opcional: true, blocoProvaIdBloco: 11 },
+        ]
+    });
+    console.log("✅ Quesitos criados com sucesso!"); 
     
-    // // =========================
-    // // SUBQUESITOS
-    // // =========================
-    // await prisma.subQuesitos.createMany({
-    //     data: [
-    //         { nomeSubquesito: "Harmonia do par", notaSubequesito: 1, quesitoId: 1 },
-    //         { nomeSubquesito: "Correção coreográfica", notaSubequesito: 2, quesitoId: 1 },
-    //         { nomeSubquesito: "Interpretação artística", notaSubequesito: 2, quesitoId: 1 },
-    //         { nomeSubquesito: "Disposição do par na sala", notaSubequesito: 1, quesitoId: 1 }
-    //     ]
-    // });
-    // console.log("✅ SubQuesitos criados com sucesso!");
+    // =========================
+    // SUBQUESITOS
+    // =========================
+    await prisma.subQuesitos.createMany({
+        data: [
+            { nomeSubquesito: "Harmonia do par", notaSubequesito: 1, quesitoId: 7 },
+            { nomeSubquesito: "Correção coreográfica", notaSubequesito: 2, quesitoId: 7 },
+            { nomeSubquesito: "Interpretação artística", notaSubequesito: 2, quesitoId: 7 },
+            { nomeSubquesito: "Disposição do par na sala", notaSubequesito: 1, quesitoId: 7 }
+        ]
+    });
+    console.log("✅ SubQuesitos criados com sucesso!");
 
     // =========================
     // DANÇAS
