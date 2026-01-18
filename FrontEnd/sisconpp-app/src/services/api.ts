@@ -328,8 +328,8 @@ export async function criarAvaliacaoCompleta(payload: CriarAvaliacaoCompletaDTO)
 }
 
 export async function buscarEstruturaAvaliacao(avaliadorId: number, candidatoId: number) {
-  const response = await api.get(`/avaliacao/avaliacao/${avaliadorId}/${candidatoId}`);
-  return response.data;
+  const response = await api.get<{ provaPratica: ProvaPratica }>(`/avaliacao/avaliacao/${avaliadorId}/${candidatoId}`);
+  return response.data.provaPratica;
 }
 
 export async function criarAvaliacaoTeorica(payload: CriarAvaliacaoCompletaDTO) {

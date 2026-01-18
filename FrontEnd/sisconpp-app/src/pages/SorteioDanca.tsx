@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 import SideNavBar from "../components/SideNavBar/SideNavBar";
-import { listarCandidatos, listarCategorias, getDancasTradicionais, getDancasSalao, criarPreferencia } from "../services/api";
+import {
+    listarCandidatos,
+    listarCategorias,
+    getDancasTradicionais,
+    getDancasSalao,
+    criarPreferencia,
+} from "../services/api";
 import { DancaSalaoTradicional, Danca } from "../types/SorteioDanca";
 import { Candidato } from "../types/Candidato";
 import { Categoria } from "../types/Categoria";
@@ -29,6 +35,9 @@ export default function SorteioDancas() {
 
     const categoriaAtual = categorias.find((c) => c.idCategoria === categoriaSelecionada);
     const maxSelecionados = categoriaAtual?.sorteioDanca ?? null;
+
+    // ✅ REGRA: se sorteioDanca === 1 => NÃO TEM SORTEIO (só preferência)
+    const naoTemSorteio = categoriaAtual?.sorteioDanca === 1;
 
     useEffect(() => {
         listarCandidatos().then((res) => setCandidatos(res as Candidato[]));
@@ -64,6 +73,16 @@ export default function SorteioDancas() {
 
         try {
             await criarPreferencia(preferencias);
+
+            if (naoTemSorteio) {
+                toast.success("Preferência salva com sucesso!");
+                setIsDialogOpen(false);
+                setSelecionados([]);
+                setDancas([]);
+                setTipoDanca(null);
+                return;
+            }
+
             toast.success("Preferências salvas! Iniciando sorteio...");
             setPreferenciasSalvas(true);
             setIsDialogOpen(false);
@@ -84,9 +103,7 @@ export default function SorteioDancas() {
             <SideNavBar />
 
             <main className="flex-1 p-6 md:p-8 flex flex-col overflow-y-auto">
-
                 <div className="w-full bg-surface-containerLowest rounded-2xl shadow-sm border border-outline-variant flex flex-col min-h-[600px]">
-
                     <div className="p-6 border-b border-outline-variant flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div className="flex items-center gap-3">
                             <div className="p-3 bg-primary-container rounded-xl text-primary-onContainer shadow-sm">
@@ -97,7 +114,9 @@ export default function SorteioDancas() {
                                 <p className="text-sm text-neutral-onSurface opacity-70">
                                     {preferenciasSalvas
                                         ? "Sorteio em andamento..."
-                                        : "Configure as opções e realize o sorteio"}
+                                        : naoTemSorteio
+                                            ? "Selecione e salve a preferência (sem sorteio nesta categoria)"
+                                            : "Configure as opções e realize o sorteio"}
                                 </p>
                             </div>
                         </div>
@@ -113,10 +132,8 @@ export default function SorteioDancas() {
                     </div>
 
                     <div className="p-6 md:p-8 flex-1 flex flex-col">
-
                         {!preferenciasSalvas ? (
                             <div className="flex flex-col h-full space-y-8 animate-fadeIn">
-
                                 <div className="space-y-6">
                                     <DancaForm
                                         categorias={categorias}
@@ -137,11 +154,13 @@ export default function SorteioDancas() {
                                             <h3 className="text-lg font-bold text-neutral-onSurface">
                                                 Selecione as danças
                                             </h3>
-                                            <span className={`text-sm font-medium px-3 py-1 rounded-full ${selecionados.length === maxSelecionados
-                                                    ? 'bg-primary-container text-primary-onContainer'
-                                                    : 'bg-surface-variant text-neutral-onVariant'
-                                                }`}>
-                                                {selecionados.length} / {maxSelecionados || '?'} selecionadas
+                                            <span
+                                                className={`text-sm font-medium px-3 py-1 rounded-full ${selecionados.length === maxSelecionados
+                                                        ? "bg-primary-container text-primary-onContainer"
+                                                        : "bg-surface-variant text-neutral-onVariant"
+                                                    }`}
+                                            >
+                                                {selecionados.length} / {maxSelecionados || "?"} selecionadas
                                             </span>
                                         </div>
 
@@ -163,7 +182,7 @@ export default function SorteioDancas() {
                                         className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-8 py-3 rounded-xl shadow-lg shadow-primary/20 font-bold transition-all transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none"
                                     >
                                         <Save size={20} />
-                                        Confirmar e Sortear
+                                        {naoTemSorteio ? "Confirmar Preferência" : "Confirmar e Sortear"}
                                     </button>
                                 </div>
                             </div>
@@ -194,9 +213,12 @@ export default function SorteioDancas() {
                         <div className="w-14 h-14 bg-primary-container text-primary rounded-full flex items-center justify-center mb-4">
                             <CheckCircle size={32} />
                         </div>
-                        <h2 className="text-xl font-bold text-neutral-onBackground">Confirmar Sorteio</h2>
+                        <h2 className="text-xl font-bold text-neutral-onBackground">
+                            {naoTemSorteio ? "Confirmar Preferência" : "Confirmar Sorteio"}
+                        </h2>
                         <p className="text-sm text-neutral-onSurface opacity-70 mt-2 max-w-xs mx-auto">
-                            Você selecionou <strong>{selecionados.length}</strong> danças. Tudo pronto para começar?
+                            Você selecionou <strong>{selecionados.length}</strong> danças.{" "}
+                            {naoTemSorteio ? "Deseja salvar a preferência?" : "Tudo pronto para começar?"}
                         </p>
                     </div>
 
@@ -205,7 +227,10 @@ export default function SorteioDancas() {
                             {dancas
                                 .filter((d) => selecionados.includes(d.idDanca))
                                 .map((d) => (
-                                    <li key={d.idDanca} className="text-sm font-medium text-neutral-onSurface flex items-center gap-3 p-2 rounded-lg bg-surface-containerLowest border border-outline/50">
+                                    <li
+                                        key={d.idDanca}
+                                        className="text-sm font-medium text-neutral-onSurface flex items-center gap-3 p-2 rounded-lg bg-surface-containerLowest border border-outline/50"
+                                    >
                                         <span className="w-2 h-2 rounded-full bg-primary flex-shrink-0 ml-1"></span>
                                         {d.nomeDanca}
                                     </li>
@@ -224,16 +249,20 @@ export default function SorteioDancas() {
                             onClick={salvarPreferencias}
                             className="flex items-center gap-2 px-6 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-xl shadow-md transition font-bold"
                         >
-                            <Dices size={18} /> Iniciar
+                            {naoTemSorteio ? <Save size={18} /> : <Dices size={18} />}
+                            {naoTemSorteio ? "Salvar" : "Iniciar"}
                         </button>
                     </div>
                 </div>
             </Modal>
 
-            <Modal isOpen={!!resultadoFinal} onClose={() => {
-                setResultadoFinal(null);
-                window.location.reload();
-            }}>
+            <Modal
+                isOpen={!!resultadoFinal}
+                onClose={() => {
+                    setResultadoFinal(null);
+                    window.location.reload();
+                }}
+            >
                 <div className="flex flex-col items-center text-center p-8 bg-white rounded-2xl">
                     <div className="mb-6 p-4 bg-primary-container/30 rounded-full text-primary-dark animate-bounce">
                         <Trophy size={48} strokeWidth={1.5} />

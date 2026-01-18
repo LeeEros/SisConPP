@@ -43,6 +43,7 @@ export interface RelatorioIndividualDTO {
         subquesitos: {
           nomeSubQuesito: string;
           nota: number;
+          subGrupo: string | null;
         }[];
       }[];
       totalBloco: number; 
@@ -51,6 +52,13 @@ export interface RelatorioIndividualDTO {
   }[];
 
   totalFinal: number; 
+}
+
+export enum SubGrupoVivencia {
+    APRESENTACAO_PASTA = "APRESENTACAO_PASTA",
+    APROVEITAMENTO_TEMPO = "APROVEITAMENTO_TEMPO",
+    COLABORACAO_PROMOCOES = "COLABORACAO_PROMOCOES",
+    PARTICIPACAO_EVENTOS = "PARTICIPACAO_EVENTOS"
 }
 
 export interface BlocoResumo {

@@ -1,72 +1,97 @@
-import { PrismaClient } from "@prisma/client"
+import { PrismaClient, VivenciaSubGrupo } from "@prisma/client";
 
-const prisma = new PrismaClient;
+const prisma = new PrismaClient();
 
-class SubQuesitosService{
-    constructor(protected prisma: PrismaClient){}
+type CriarSubQuesitoDTO = {
+  nomeSubquesito: string;
+  notaSubequesito: number;
+  quesitoId: number;
+  subGrupo?: VivenciaSubGrupo | null;
+};
 
-    async criarsubQuesitos(
-        nomeSubquesito : string,
-        notaSubequesito: number,
-        quesitoId: number
-    ){
-        try{
-            const subquesito = await this.prisma.subQuesitos.create({
-                data:{
-                    nomeSubquesito,
-                    notaSubequesito,
-                    quesitoId
-                },
-            });
+type AtualizarSubQuesitoDTO = {
+  nomeSubquesito?: string;
+  notaSubequesito?: number;
+  quesitoId?: number;
+  subGrupo?: VivenciaSubGrupo | null;
+};
 
-            return subquesito;
-        }catch (error) {
-            console.error("Erro detalhado:", error);
-            throw new Error("Erro ao criar Subquesito. Verifique os dados fornecidos.");
-        }
+class SubQuesitosService {
+  constructor(protected prisma: PrismaClient) {}
 
+  async criarsubQuesitos(data: CriarSubQuesitoDTO) {
+    try {
+      const subquesito = await this.prisma.subQuesitos.create({
+        data: {
+          nomeSubquesito: data.nomeSubquesito,
+          notaSubequesito: data.notaSubequesito,
+          quesitoId: data.quesitoId,
+          subGrupo: data.subGrupo ?? null,
+        },
+      });
+
+      return subquesito;
+    } catch (error) {
+      console.error("Erro detalhado:", error);
+      throw new Error("Erro ao criar Subquesito. Verifique os dados fornecidos.");
     }
+  }
 
-    async atualizarsubQuesitos(idSubequestios: number, data: any){
-        try{
-            const subquesito = await this.prisma.subQuesitos.update({
-                where: { idSubequestios },
-                data,
-            });
+  async atualizarsubQuesitos(idSubequestios: number, data: AtualizarSubQuesitoDTO) {
+    try {
+      const subquesito = await this.prisma.subQuesitos.update({
+        where: { idSubequestios },
+        data: {
+          ...data,
+          ...(data.subGrupo !== undefined ? { subGrupo: data.subGrupo } : {}),
+        },
+      });
 
-            console.log("Subquesito atualizado com sucesso.");
-            return subquesito;
-        }catch (error){
-            console.error("Erro detalhado:", error);
-            throw new Error("Erro ao atualizar Subquesito. Verifique os dados fornecidos.");
-        }
+      return subquesito;
+    } catch (error) {
+      console.error("Erro detalhado:", error);
+      throw new Error("Erro ao atualizar Subquesito. Verifique os dados fornecidos.");
     }
+  }
 
-    async buscarSubQuesitoPorId(idSubequestios: number){
-        const subquesito = await this.prisma.subQuesitos.findUnique({
-            where: { idSubequestios },
-        });
+  async buscarSubQuesitoPorId(idSubequestios: number) {
+    return await this.prisma.subQuesitos.findUnique({
+      where: { idSubequestios },
+      select: {
+        idSubequestios: true,
+        nomeSubquesito: true,
+        notaSubequesito: true,
+        quesitoId: true,
+        subGrupo: true,
+      },
+    });
+  }
 
-        return subquesito;
+  async buscarSubQuesitos() {
+    return await this.prisma.subQuesitos.findMany({
+      orderBy: { idSubequestios: "asc" },
+      select: {
+        idSubequestios: true,
+        nomeSubquesito: true,
+        notaSubequesito: true,
+        quesitoId: true,
+        subGrupo: true,
+      },
+    });
+  }
+
+  async deletarSubQuesito(idSubequestios: number) {
+    try {
+      await this.prisma.subQuesitos.delete({
+        where: { idSubequestios },
+      });
+
+      return { message: "Subquesito deletado com sucesso." };
+    } catch (error) {
+      console.error("Erro detalhado:", error);
+      throw new Error("Erro ao deletar Subquesito.");
     }
-
-    async buscarSubQuesitos(){
-        const subquesitos = await this.prisma.subQuesitos.findMany();
-        return subquesitos;
-    }
-
-    async deletarSubQuesito(idSubequestios: number){
-        try{
-            await this.prisma.subQuesitos.delete({
-                where: { idSubequestios },
-            });
-
-            console.log("Subquesito deletado com sucesso.");
-        }catch (error){
-            console.error("Erro detalhado:", error);
-            throw new Error("Erro ao deletar Subquesito.");
-        }
-    }
+  }
 }
 
 const subQuesitosService = new SubQuesitosService(prisma);

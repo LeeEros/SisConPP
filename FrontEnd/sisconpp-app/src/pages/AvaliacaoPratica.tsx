@@ -87,7 +87,7 @@ export default function AvaliacaoPage() {
                     avaliadorSelecionado,
                     candidatoSelecionado
                 );
-                setProvasSelecionadas(response as ProvaAccordionDTO[]);
+                setProvasSelecionadas(Array.isArray(response) ? response : [response] as ProvaAccordionDTO[]);
             } catch {
                 toast.error("Erro ao carregar estrutura da avaliação");
             }

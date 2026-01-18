@@ -1,4 +1,4 @@
-import { AvaliacaoSubQuesito, PrismaClient } from "@prisma/client";
+import { AvaliacaoSubQuesito, DancaSalaoTradicional, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -26,7 +26,7 @@ export class AvaliacaoService {
                         avaliadorId: data.avaliadorId,
                         candidatoId: data.candidatoId,
                         blocoProvaId: data.blocoProvaId,
-                        provaPraticaId: data.provaPraticaId,     
+                        provaPraticaId: data.provaPraticaId,
                         fichaCandidatoIdFicha: data.ficha.idFicha,
                         notaFinal: 0,
                     },
@@ -125,7 +125,7 @@ export class AvaliacaoService {
             return avaliacoes;
         } catch (error) {
             throw new Error(`Erro ao listar avaliações: ${error}`);
-        }   
+        }
     }
 
     async buscarEstruturaCompleta(
@@ -135,34 +135,78 @@ export class AvaliacaoService {
     ) {
         const candidato = await this.prisma.candidato.findUnique({
             where: { idCandidato: candidatoId },
-            include: { Categoria: true },
+            include: {
+                Categoria: {
+                    select: {
+                        idCategoria: true,
+                        nomeCategoria: true,
+                        sorteioDanca: true,
+                    },
+                },
+                PreferenciaSorteioDanca: {
+                    select: {
+                        nomeSorteioDanca: true,
+                        dancas: { select: { nomeDanca: true } },
+                    },
+                },
+                sorteioDanca: {
+                    orderBy: { dataSorteio: "desc" },
+                    take: 5,
+                    select: {
+                        tipoDanca: true,
+                        resultadoSorteio: true,
+                        dataSorteio: true,
+                    },
+                },
+            },
         });
 
         if (!candidato) throw new Error("Candidato não encontrado");
 
+        /**
+         * ======================================================
+         * ✅ REGRA CORRETA
+         * 0 ou 1 = NÃO tem sorteio (só preferência)
+         * 2+     = tem sorteio
+         * ======================================================
+         */
+        const possuiSorteio = (candidato.Categoria?.sorteioDanca ?? 0) > 1;
+
+        /**
+         * ======================================================
+         * 🎵 PREFERÊNCIAS (SEMPRE)
+         * ======================================================
+         */
+        const escolhasSalao = candidato.PreferenciaSorteioDanca
+            .filter((p) => p.nomeSorteioDanca === "DANCA_DE_SALAO")
+            .flatMap((p) => p.dancas.map((d) => d.nomeDanca));
+
+        const escolhasTradicional = candidato.PreferenciaSorteioDanca
+            .filter((p) => p.nomeSorteioDanca === "DANCA_TRADICIONAL")
+            .flatMap((p) => p.dancas.map((d) => d.nomeDanca));
+
+        /**
+         * ======================================================
+         * 📋 PROVAS / BLOCOS / QUESITOS
+         * ======================================================
+         */
         const provaPratica = await this.prisma.provaPratica.findMany({
             where: {
                 categorias: {
-                    some: {
-                        idCategoria: candidato.categoriaId,
-                    },
+                    some: { idCategoria: candidato.categoriaId },
                 },
                 comissaoProvaPraticas: {
                     some: {
                         Comissao: {
                             usuarios: {
-                                some: {
-                                    usuarioId: avaliadorId,
-                                },
+                                some: { usuarioId: avaliadorId },
                             },
                         },
                     },
                 },
-                ...(provasSelecionadas?.length && {
-                    idProvaPratica: {
-                        in: provasSelecionadas,
-                    },
-                }),
+                ...(provasSelecionadas?.length
+                    ? { idProvaPratica: { in: provasSelecionadas } }
+                    : {}),
             },
             include: {
                 blocosProvas: {
@@ -177,7 +221,149 @@ export class AvaliacaoService {
             },
         });
 
-        return provaPratica;
+        /**
+         * ======================================================
+         * 🧠 LISTAS DE DANÇAS (1x)
+         * ======================================================
+         */
+        const [dancasSalao, dancasTrad] = await Promise.all([
+            this.prisma.danca.findMany({
+                where: { dancaSalaoTradicional: DancaSalaoTradicional.DANCA_DE_SALAO },
+                select: { idDanca: true, nomeDanca: true },
+                orderBy: { idDanca: "asc" },
+            }),
+            this.prisma.danca.findMany({
+                where: { dancaSalaoTradicional: DancaSalaoTradicional.DANCA_TRADICIONAL },
+                select: { idDanca: true, nomeDanca: true },
+                orderBy: { idDanca: "asc" },
+            }),
+        ]);
+
+        const mapSalao = new Map<number, string>(dancasSalao.map((d) => [d.idDanca, d.nomeDanca]));
+        const mapTrad = new Map<number, string>(dancasTrad.map((d) => [d.idDanca, d.nomeDanca]));
+
+        const resolveNomeDanca = (
+            tipo: "DANCA_DE_SALAO" | "DANCA_TRADICIONAL",
+            resultadoSorteio: number | null | undefined
+        ) => {
+            if (!resultadoSorteio || resultadoSorteio <= 0) return null;
+
+            const map = tipo === "DANCA_DE_SALAO" ? mapSalao : mapTrad;
+            const lista = tipo === "DANCA_DE_SALAO" ? dancasSalao : dancasTrad;
+
+            // 1) tenta como idDanca
+            const porId = map.get(resultadoSorteio);
+            if (porId) return porId;
+
+            // 2) fallback: posição 1..N
+            const idx = resultadoSorteio - 1;
+            return lista[idx]?.nomeDanca ?? null;
+        };
+
+        /**
+         * ======================================================
+         * 🎲 PEGA O SORTEIO MAIS RECENTE (POR TIPO)
+         * ======================================================
+         */
+        const sorteioSalaoAtual =
+            candidato.sorteioDanca
+                ?.filter((s) => s.tipoDanca === DancaSalaoTradicional.DANCA_DE_SALAO)
+                ?.sort((a, b) => new Date(b.dataSorteio).getTime() - new Date(a.dataSorteio).getTime())[0] ?? null;
+
+        const sorteioTradAtual =
+            candidato.sorteioDanca
+                ?.filter((s) => s.tipoDanca === DancaSalaoTradicional.DANCA_TRADICIONAL)
+                ?.sort((a, b) => new Date(b.dataSorteio).getTime() - new Date(a.dataSorteio).getTime())[0] ?? null;
+
+        /**
+         * ======================================================
+         * ✅ CONTEXTO DAS DANÇAS (COM NOME)
+         * ======================================================
+         */
+        const nomeSalaoSorteada = possuiSorteio
+            ? resolveNomeDanca("DANCA_DE_SALAO", sorteioSalaoAtual?.resultadoSorteio)
+            : null;
+
+        const nomeTradSorteada = possuiSorteio
+            ? resolveNomeDanca("DANCA_TRADICIONAL", sorteioTradAtual?.resultadoSorteio)
+            : null;
+
+        const contextoDancas = {
+            possuiSorteio,
+            salao: {
+                sorteada: nomeSalaoSorteada,
+                escolhidas: !possuiSorteio && escolhasSalao.length ? escolhasSalao : null,
+            },
+            tradicional: {
+                sorteada: nomeTradSorteada,
+                escolhidas: !possuiSorteio && escolhasTradicional.length ? escolhasTradicional : null,
+            },
+        };
+
+        /**
+         * ======================================================
+         * ✅ INJETAR metaDanca nos quesitos de DANÇA
+         * ======================================================
+         */
+        const provaPraticaComMeta = provaPratica.map((pp) => ({
+            ...pp,
+            blocosProvas: pp.blocosProvas.map((bloco) => ({
+                ...bloco,
+                quesitos: bloco.quesitos.map((q) => {
+                    const nome = (q.nomeQuesito ?? "").toLowerCase();
+
+                    const isSalao =
+                        nome.includes("dança gaúcha de salão") ||
+                        nome.includes("danca gaucha de salao");
+
+                    const isFolclorica =
+                        nome.includes("dança folclórica tradicional") ||
+                        nome.includes("danca folclorica tradicional");
+
+                    if (!isSalao && !isFolclorica) return q;
+
+                    const tipo: "DANCA_DE_SALAO" | "DANCA_TRADICIONAL" = isSalao
+                        ? "DANCA_DE_SALAO"
+                        : "DANCA_TRADICIONAL";
+
+                    const nomeSorteada = possuiSorteio
+                        ? (isSalao ? contextoDancas.salao.sorteada : contextoDancas.tradicional.sorteada)
+                        : null;
+
+                    const escolhidas = !possuiSorteio
+                        ? (isSalao ? contextoDancas.salao.escolhidas : contextoDancas.tradicional.escolhidas)
+                        : null;
+
+                    const textoExibicao = possuiSorteio
+                        ? nomeSorteada
+                            ? `Dança sorteada: ${nomeSorteada}`
+                            : "Dança sorteada: (não realizada)"
+                        : escolhidas?.length
+                            ? `Dança escolhida: ${escolhidas.join(", ")}`
+                            : "Dança escolhida: (não informada)";
+
+                    const metaDanca = {
+                        tipo,
+                        possuiSorteio,
+                        sorteada: nomeSorteada,
+                        escolhidas,
+                        textoExibicao,
+                    };
+
+                    return { ...q, metaDanca };
+                }),
+            })),
+        }));
+
+        console.dir(
+            { possuiSorteio, contextoDancas, provaPraticaComMeta },
+            { depth: null, colors: true }
+        );
+
+        return {
+            provaPratica: provaPraticaComMeta,
+            contextoDancas,
+        };
     }
 
     async criarAvaliacaoTeorica(data: CriarAvaliacaoTeoricaDTO) {

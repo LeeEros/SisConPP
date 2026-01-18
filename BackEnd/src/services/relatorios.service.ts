@@ -92,7 +92,7 @@ export class RelatoriosService {
     }
 
     async gerarRelatorioIndividualDetalhado(candidatoId: number) {
-        const avaliacoes = await this.prisma.avaliacao.findMany({
+        const avaliacoes = await prisma.avaliacao.findMany({
             where: { candidatoId },
             include: {
                 Usuario: {
@@ -110,7 +110,12 @@ export class RelatoriosService {
                         },
                         subQuesitosAvaliados: {
                             include: {
-                                SubQuesito: true,
+                                SubQuesito: {
+                                    select: {
+                                        nomeSubquesito: true,
+                                        subGrupo: true, // ✅ para agrupar no front (Vivência)
+                                    },
+                                },
                             },
                         },
                     },
@@ -135,6 +140,7 @@ export class RelatoriosService {
                                 subquesitos: {
                                     nomeSubQuesito: string;
                                     nota: number;
+                                    subGrupo: any | null; 
                                 }[];
                             }
                         >;
@@ -180,33 +186,28 @@ export class RelatoriosService {
                     const subquesitos =
                         aq.subQuesitosAvaliados
                             ?.filter(
-                                (sq) =>
-                                    sq.notaSubQuesito !== null &&
-                                    sq.notaSubQuesito > 0
+                                (sq) => sq.notaSubQuesito !== null && sq.notaSubQuesito !== 0
                             )
                             .map((sq) => ({
-                                nomeSubQuesito:
-                                    sq.SubQuesito?.nomeSubquesito ?? "",
-                                nota: sq.notaSubQuesito!,
+                                nomeSubQuesito: sq.SubQuesito?.nomeSubquesito ?? "",
+                                nota: sq.notaSubQuesito as number,
+                                subGrupo: sq.SubQuesito?.subGrupo ?? null,
                             })) ?? [];
 
-                    const temNota =
-                        aq.notaQuesito !== null && aq.notaQuesito > 0;
+                    const temNota = aq.notaQuesito !== null && aq.notaQuesito !== 0;
 
                     if (!temNota && subquesitos.length === 0) continue;
 
                     blocoMap.quesitos.set(aq.Quesito.idQuesito, {
                         nomeQuesito: aq.Quesito.nomeQuesito,
-                        notaQuesito: aq.notaQuesito ?? 0,
-                        comentario: aq.comentario?.trim()
-                            ? aq.comentario
-                            : null,
+                        notaQuesito: (aq.notaQuesito ?? 0) as number,
+                        comentario: aq.comentario?.trim() ? aq.comentario : null,
                         subquesitos,
                     });
-
-                    blocoMap.totalBloco += aq.notaQuesito ?? 0;
-                    avaliador.totalAvaliador += aq.notaQuesito ?? 0;
-                    totalFinal += aq.notaQuesito ?? 0;
+                    
+                    blocoMap.totalBloco += (aq.notaQuesito ?? 0) as number;
+                    avaliador.totalAvaliador += (aq.notaQuesito ?? 0) as number;
+                    totalFinal += (aq.notaQuesito ?? 0) as number;
                 }
 
                 if (blocoMap.quesitos.size === 0) {
@@ -238,22 +239,20 @@ export class RelatoriosService {
                 const bloco = quesito?.BlocoProva;
                 if (!quesito || !bloco) continue;
 
+                // ✅ Aceita negativos e ignora 0 (para não listar "não avaliado")
                 const subquesitos =
                     aq.subQuesitosAvaliados
-                        ?.filter(
-                            (sq) =>
-                                sq.notaSubQuesito !== null &&
-                                sq.notaSubQuesito > 0
-                        )
+                        ?.filter((sq) => sq.notaSubQuesito !== null && sq.notaSubQuesito !== 0)
                         .map((sq) => ({
-                            nomeSubQuesito:
-                                sq.SubQuesito?.nomeSubquesito ?? "",
-                            nota: sq.notaSubQuesito!,
+                            nomeSubQuesito: sq.SubQuesito?.nomeSubquesito ?? "",
+                            nota: sq.notaSubQuesito as number,
+                            subGrupo: sq.SubQuesito?.subGrupo ?? null,
                         })) ?? [];
 
-                const temNota =
-                    aq.notaQuesito !== null && aq.notaQuesito > 0;
+                // ✅ Aceita negativos; 0 significa "não avaliado"
+                const temNota = aq.notaQuesito !== null && aq.notaQuesito !== 0;
 
+                // ✅ não entra no relatório se não tiver nada avaliado
                 if (!temNota && subquesitos.length === 0) continue;
 
                 if (!avaliador.blocos.has(bloco.idBloco)) {
@@ -268,16 +267,15 @@ export class RelatoriosService {
 
                 blocoMap.quesitos.set(quesito.idQuesito, {
                     nomeQuesito: quesito.nomeQuesito,
-                    notaQuesito: aq.notaQuesito ?? 0,
-                    comentario: aq.comentario?.trim()
-                        ? aq.comentario
-                        : null,
+                    notaQuesito: (aq.notaQuesito ?? 0) as number,
+                    comentario: aq.comentario?.trim() ? aq.comentario : null,
                     subquesitos,
                 });
 
-                blocoMap.totalBloco += aq.notaQuesito ?? 0;
-                avaliador.totalAvaliador += aq.notaQuesito ?? 0;
-                totalFinal += aq.notaQuesito ?? 0;
+                // ✅ soma negativos normalmente
+                blocoMap.totalBloco += (aq.notaQuesito ?? 0) as number;
+                avaliador.totalAvaliador += (aq.notaQuesito ?? 0) as number;
+                totalFinal += (aq.notaQuesito ?? 0) as number;
             }
         }
 
@@ -286,7 +284,7 @@ export class RelatoriosService {
          * 🔹 DADOS DO CANDIDATO
          * ======================================================
          */
-        const ficha = await this.prisma.fichaCandidato.findUnique({
+        const ficha = await prisma.fichaCandidato.findUnique({
             where: { candidatoId },
             include: {
                 Candidato: {
@@ -310,21 +308,16 @@ export class RelatoriosService {
             notaCandidato: ficha?.notaCandidato,
             avaliadores: Array.from(avaliadoresMap.values())
                 .filter((av) => av.blocos.size > 0)
-                .sort((a, b) =>
-                    a.nomeAvaliador.localeCompare(b.nomeAvaliador)
-                )
+                .sort((a, b) => a.nomeAvaliador.localeCompare(b.nomeAvaliador))
                 .map((av) => ({
                     nomeAvaliador: av.nomeAvaliador,
                     blocos: Array.from(av.blocos.values())
                         .filter((bl) => bl.quesitos.size > 0)
-                        .sort((a, b) =>
-                            a.nomeBloco.localeCompare(b.nomeBloco)
-                        )
+                        .sort((a, b) => a.nomeBloco.localeCompare(b.nomeBloco))
                         .map((bl) => ({
                             nomeBloco: bl.nomeBloco,
-                            quesitos: Array.from(bl.quesitos.values()).sort(
-                                (a, b) =>
-                                    a.nomeQuesito.localeCompare(b.nomeQuesito)
+                            quesitos: Array.from(bl.quesitos.values()).sort((a, b) =>
+                                a.nomeQuesito.localeCompare(b.nomeQuesito)
                             ),
                             totalBloco: bl.totalBloco,
                         })),
@@ -333,7 +326,6 @@ export class RelatoriosService {
             totalFinal,
         };
     }
-
 
     async gerarRelatorioPorCategoriaConcurso(
         categoriaId: number,

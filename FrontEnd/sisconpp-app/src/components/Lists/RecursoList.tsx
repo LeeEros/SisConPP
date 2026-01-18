@@ -26,9 +26,9 @@ export default function RecursoList({ recursos, loading, onView }: RecursoListPr
           <CheckCircle2 size={12} /> Deferido
         </span>
       );
-    }    
+    }
 
-    if (status === "INDEFERIDO") {
+    else if (status === "INDEFERIDO") {
       return (
         <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700 border border-red-200">
           <XCircle size={12} /> Indeferido
@@ -62,11 +62,11 @@ export default function RecursoList({ recursos, loading, onView }: RecursoListPr
   }
 
   return (
-    <div className="flex flex-col h-full bg-white rounded-xl shadow-sm border border-outline-variant overflow-hidden">
-      <div className="overflow-x-auto custom-scrollbar h-full">
-        <table className="w-full text-sm text-left">
-          <thead className="bg-surface-variant/30 text-neutral-onVariant border-b border-outline-variant sticky top-0 backdrop-blur-sm z-10">
-            <tr>
+    <div className="flex flex-col h-full p-6">
+      <div className="bg-surface-containerLowest rounded-2xl shadow-sm border border-outline-variant overflow-hidden">
+        <table className="w-full">
+          <thead>
+            <tr className="text-left bg-surface-variant/30 text-neutral-onVariant border-b border-outline-variant">
               <th className="p-4 font-semibold uppercase tracking-wider min-w-[220px]">
                 Recurso / Motivo
               </th>

@@ -5,11 +5,11 @@ import { permitirFuncoes } from "../middlewares/roleMiddleware";
 
 const router = express.Router();
 
-router.post("/", async (req: Request, res: Response) => {
+router.post("/", authMiddleware, permitirFuncoes(["SECRETARIO"]),  async (req: Request, res: Response) => {
     await RecursoController.solicitarRecurso(req, res);
 });
 
-router.get("/", async (req: Request, res: Response) => {
+router.get("/", authMiddleware, permitirFuncoes(["SECRETARIO"]), async (req: Request, res: Response) => {
     await RecursoController.listarRecursos(req, res);
 });
 
@@ -21,7 +21,7 @@ router.put("/:id", authMiddleware, permitirFuncoes(["SECRETARIO"]), async (req: 
     await RecursoController.alterarStatusRecurso(req, res);
 });
 
-router.get("/candidato/:candidatoId/avaliador/:avaliadorId", authMiddleware, permitirFuncoes(["CANDIDATO"]), async (req: Request, res: Response) => {
+router.get("/candidato/:candidatoId/avaliador/:avaliadorId", authMiddleware, async (req: Request, res: Response) => {
     await RecursoController.listarQuesitosAvaliados(req, res);
 });
 
