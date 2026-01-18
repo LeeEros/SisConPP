@@ -159,7 +159,6 @@ export default function ConcursoList({ onEdit }: ConcursoListProps) {
                     {selectedConcurso && (
                         <ConcursoView
                             concurso={selectedConcurso}
-                            onVoltar={() => setIsViewModalOpen(false)}
                         />
                     )}
                 </Modal>
