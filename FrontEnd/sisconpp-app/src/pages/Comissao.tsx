@@ -31,7 +31,7 @@ export default function ComissaoPage() {
         <div className="flex flex-row min-h-screen w-full bg-neutral-background">
             <SideNavBar />
 
-            <main className="flex-1 p-6 md:p-8 flex flex-col overflow-y-auto max-h-screen">
+            <main className="flex-1 p-6 md:p-8 flex flex-col overflow-y-auto">
                 <div className="w-full bg-surface-containerLowest rounded-2xl shadow-sm border border-outline-variant flex flex-col">
 
                     <div className="p-6 border-b border-outline-variant flex flex-col md:flex-row justify-between items-start md:items-center gap-4">

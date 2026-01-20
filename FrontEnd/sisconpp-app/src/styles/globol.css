@@ -6,3 +6,29 @@ body {
     @apply bg-neutral-background text-neutral-onBackground;
     -webkit-font-smoothing: antialiased;
 }
+
+@layer utilities {
+  /* Estilo da barra de rolagem personalizada */
+  .custom-scrollbar {
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent; /* Firefox */
+  }
+
+  /* Chrome, Edge, Safari */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px; /* Largura fina */
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent; /* Fundo transparente */
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.2); /* Cor da barra (branca translúcida) */
+    border-radius: 20px; /* Bordas arredondadas */
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.4); /* Cor ao passar o mouse */
+  }
+}

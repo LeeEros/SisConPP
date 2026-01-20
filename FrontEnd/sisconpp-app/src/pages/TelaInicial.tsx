@@ -83,7 +83,7 @@ function Dashboard() {
     <div className="flex min-h-screen bg-neutral-background text-neutral-onBackground">
       <SideNavBar />
 
-      <main className="flex-1 p-8 overflow-y-auto max-h-screen">
+      <main className="flex-1 p-6 md:p-8 pt-16 md:pt-8 overflow-y-auto max-h-screen">
 
         {/* 1. Cabeçalho */}
         <div className="mb-8 flex flex-col md:flex-row justify-between md:items-center gap-4">
