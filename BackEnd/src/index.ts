@@ -24,12 +24,7 @@ import relatorios from "./routes/relatorios.routes";
 
 const app: Application = express();
 
-app.use(
-  cors({
-    origin: ["http://localhost:5173", "http://192.168.1.22:4173"],
-    credentials: true,
-  }),
-);
+app.use(cors());
 
 app.use(express.json()); // Para analisar o corpo das requisições como JSON
 
