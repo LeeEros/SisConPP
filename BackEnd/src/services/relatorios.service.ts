@@ -113,7 +113,7 @@ export class RelatoriosService {
                                 SubQuesito: {
                                     select: {
                                         nomeSubquesito: true,
-                                        subGrupo: true, // ✅ para agrupar no front (Vivência)
+                                        subGrupo: true,
                                     },
                                 },
                             },
@@ -140,7 +140,7 @@ export class RelatoriosService {
                                 subquesitos: {
                                     nomeSubQuesito: string;
                                     nota: number;
-                                    subGrupo: any | null; 
+                                    subGrupo: any | null;
                                 }[];
                             }
                         >;
@@ -183,31 +183,38 @@ export class RelatoriosService {
                 const blocoMap = avaliador.blocos.get(avaliacao.provaTeoricaId)!;
 
                 for (const aq of avaliacao.quesitosAvaliados) {
+                    const quesito = aq.Quesito;
+
                     const subquesitos =
-                        aq.subQuesitosAvaliados
-                            ?.filter(
-                                (sq) => sq.notaSubQuesito !== null && sq.notaSubQuesito !== 0
-                            )
-                            .map((sq) => ({
-                                nomeSubQuesito: sq.SubQuesito?.nomeSubquesito ?? "",
-                                nota: sq.notaSubQuesito as number,
-                                subGrupo: sq.SubQuesito?.subGrupo ?? null,
-                            })) ?? [];
+                        aq.subQuesitosAvaliados?.map((sq) => ({
+                            nomeSubQuesito:
+                                sq.SubQuesito?.nomeSubquesito ?? "",
+                            nota: sq.notaSubQuesito as number,
+                            subGrupo:
+                                sq.SubQuesito?.subGrupo ?? null,
+                        })) ?? [];
 
-                    const temNota = aq.notaQuesito !== null && aq.notaQuesito !== 0;
+                    const temNota =
+                        aq.notaQuesito !== 0 ||
+                        subquesitos.some((sq) => sq.nota !== 0);
 
-                    if (!temNota && subquesitos.length === 0) continue;
+                    // ✅ Quesito opcional sem avaliação não aparece
+                    if (quesito.opcional && !temNota) {
+                        continue;
+                    }
 
-                    blocoMap.quesitos.set(aq.Quesito.idQuesito, {
-                        nomeQuesito: aq.Quesito.nomeQuesito,
-                        notaQuesito: (aq.notaQuesito ?? 0) as number,
-                        comentario: aq.comentario?.trim() ? aq.comentario : null,
+                    blocoMap.quesitos.set(quesito.idQuesito, {
+                        nomeQuesito: quesito.nomeQuesito,
+                        notaQuesito: aq.notaQuesito ?? 0,
+                        comentario: aq.comentario?.trim()
+                            ? aq.comentario
+                            : null,
                         subquesitos,
                     });
-                    
-                    blocoMap.totalBloco += (aq.notaQuesito ?? 0) as number;
-                    avaliador.totalAvaliador += (aq.notaQuesito ?? 0) as number;
-                    totalFinal += (aq.notaQuesito ?? 0) as number;
+
+                    blocoMap.totalBloco += aq.notaQuesito ?? 0;
+                    avaliador.totalAvaliador += aq.notaQuesito ?? 0;
+                    totalFinal += aq.notaQuesito ?? 0;
                 }
 
                 if (blocoMap.quesitos.size === 0) {
@@ -237,23 +244,26 @@ export class RelatoriosService {
             for (const aq of avaliacao.quesitosAvaliados) {
                 const quesito = aq.Quesito;
                 const bloco = quesito?.BlocoProva;
+
                 if (!quesito || !bloco) continue;
 
-                // ✅ Aceita negativos e ignora 0 (para não listar "não avaliado")
                 const subquesitos =
-                    aq.subQuesitosAvaliados
-                        ?.filter((sq) => sq.notaSubQuesito !== null && sq.notaSubQuesito !== 0)
-                        .map((sq) => ({
-                            nomeSubQuesito: sq.SubQuesito?.nomeSubquesito ?? "",
-                            nota: sq.notaSubQuesito as number,
-                            subGrupo: sq.SubQuesito?.subGrupo ?? null,
-                        })) ?? [];
+                    aq.subQuesitosAvaliados?.map((sq) => ({
+                        nomeSubQuesito:
+                            sq.SubQuesito?.nomeSubquesito ?? "",
+                        nota: sq.notaSubQuesito as number,
+                        subGrupo:
+                            sq.SubQuesito?.subGrupo ?? null,
+                    })) ?? [];
 
-                // ✅ Aceita negativos; 0 significa "não avaliado"
-                const temNota = aq.notaQuesito !== null && aq.notaQuesito !== 0;
+                const temNota =
+                    aq.notaQuesito !== 0 ||
+                    subquesitos.some((sq) => sq.nota !== 0);
 
-                // ✅ não entra no relatório se não tiver nada avaliado
-                if (!temNota && subquesitos.length === 0) continue;
+                // ✅ Quesito opcional sem avaliação não aparece
+                if (quesito.opcional && !temNota) {
+                    continue;
+                }
 
                 if (!avaliador.blocos.has(bloco.idBloco)) {
                     avaliador.blocos.set(bloco.idBloco, {
@@ -267,15 +277,16 @@ export class RelatoriosService {
 
                 blocoMap.quesitos.set(quesito.idQuesito, {
                     nomeQuesito: quesito.nomeQuesito,
-                    notaQuesito: (aq.notaQuesito ?? 0) as number,
-                    comentario: aq.comentario?.trim() ? aq.comentario : null,
+                    notaQuesito: aq.notaQuesito ?? 0,
+                    comentario: aq.comentario?.trim()
+                        ? aq.comentario
+                        : null,
                     subquesitos,
                 });
 
-                // ✅ soma negativos normalmente
-                blocoMap.totalBloco += (aq.notaQuesito ?? 0) as number;
-                avaliador.totalAvaliador += (aq.notaQuesito ?? 0) as number;
-                totalFinal += (aq.notaQuesito ?? 0) as number;
+                blocoMap.totalBloco += aq.notaQuesito ?? 0;
+                avaliador.totalAvaliador += aq.notaQuesito ?? 0;
+                totalFinal += aq.notaQuesito ?? 0;
             }
         }
 
@@ -291,11 +302,17 @@ export class RelatoriosService {
                     select: {
                         idCandidato: true,
                         nomeCompleto: true,
-                        Categoria: { select: { nomeCategoria: true } },
+                        Categoria: {
+                            select: {
+                                nomeCategoria: true,
+                            },
+                        },
                     },
                 },
                 Concurso: {
-                    select: { nomeConcurso: true },
+                    select: {
+                        nomeConcurso: true,
+                    },
                 },
             },
         });
@@ -306,23 +323,37 @@ export class RelatoriosService {
             categoria: ficha?.Candidato.Categoria.nomeCategoria,
             concurso: ficha?.Concurso.nomeConcurso,
             notaCandidato: ficha?.notaCandidato,
+
             avaliadores: Array.from(avaliadoresMap.values())
                 .filter((av) => av.blocos.size > 0)
-                .sort((a, b) => a.nomeAvaliador.localeCompare(b.nomeAvaliador))
+                .sort((a, b) =>
+                    a.nomeAvaliador.localeCompare(b.nomeAvaliador)
+                )
                 .map((av) => ({
                     nomeAvaliador: av.nomeAvaliador,
+
                     blocos: Array.from(av.blocos.values())
                         .filter((bl) => bl.quesitos.size > 0)
-                        .sort((a, b) => a.nomeBloco.localeCompare(b.nomeBloco))
+                        .sort((a, b) =>
+                            a.nomeBloco.localeCompare(b.nomeBloco)
+                        )
                         .map((bl) => ({
                             nomeBloco: bl.nomeBloco,
-                            quesitos: Array.from(bl.quesitos.values()).sort((a, b) =>
-                                a.nomeQuesito.localeCompare(b.nomeQuesito)
+
+                            quesitos: Array.from(
+                                bl.quesitos.values()
+                            ).sort((a, b) =>
+                                a.nomeQuesito.localeCompare(
+                                    b.nomeQuesito
+                                )
                             ),
+
                             totalBloco: bl.totalBloco,
                         })),
+
                     totalAvaliador: av.totalAvaliador,
                 })),
+
             totalFinal,
         };
     }
