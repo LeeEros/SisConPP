@@ -163,20 +163,8 @@ export class AvaliacaoService {
 
         if (!candidato) throw new Error("Candidato não encontrado");
 
-        /**
-         * ======================================================
-         * ✅ REGRA CORRETA
-         * 0 ou 1 = NÃO tem sorteio (só preferência)
-         * 2+     = tem sorteio
-         * ======================================================
-         */
         const possuiSorteio = (candidato.Categoria?.sorteioDanca ?? 0) > 1;
 
-        /**
-         * ======================================================
-         * 🎵 PREFERÊNCIAS (SEMPRE)
-         * ======================================================
-         */
         const escolhasSalao = candidato.PreferenciaSorteioDanca
             .filter((p) => p.nomeSorteioDanca === "DANCA_DE_SALAO")
             .flatMap((p) => p.dancas.map((d) => d.nomeDanca));
@@ -185,11 +173,6 @@ export class AvaliacaoService {
             .filter((p) => p.nomeSorteioDanca === "DANCA_TRADICIONAL")
             .flatMap((p) => p.dancas.map((d) => d.nomeDanca));
 
-        /**
-         * ======================================================
-         * 📋 PROVAS / BLOCOS / QUESITOS
-         * ======================================================
-         */
         const provaPratica = await this.prisma.provaPratica.findMany({
             where: {
                 categorias: {
@@ -221,11 +204,6 @@ export class AvaliacaoService {
             },
         });
 
-        /**
-         * ======================================================
-         * 🧠 LISTAS DE DANÇAS (1x)
-         * ======================================================
-         */
         const [dancasSalao, dancasTrad] = await Promise.all([
             this.prisma.danca.findMany({
                 where: { dancaSalaoTradicional: DancaSalaoTradicional.DANCA_DE_SALAO },
@@ -250,21 +228,12 @@ export class AvaliacaoService {
 
             const map = tipo === "DANCA_DE_SALAO" ? mapSalao : mapTrad;
             const lista = tipo === "DANCA_DE_SALAO" ? dancasSalao : dancasTrad;
-
-            // 1) tenta como idDanca
             const porId = map.get(resultadoSorteio);
             if (porId) return porId;
-
-            // 2) fallback: posição 1..N
             const idx = resultadoSorteio - 1;
             return lista[idx]?.nomeDanca ?? null;
         };
 
-        /**
-         * ======================================================
-         * 🎲 PEGA O SORTEIO MAIS RECENTE (POR TIPO)
-         * ======================================================
-         */
         const sorteioSalaoAtual =
             candidato.sorteioDanca
                 ?.filter((s) => s.tipoDanca === DancaSalaoTradicional.DANCA_DE_SALAO)
@@ -275,11 +244,6 @@ export class AvaliacaoService {
                 ?.filter((s) => s.tipoDanca === DancaSalaoTradicional.DANCA_TRADICIONAL)
                 ?.sort((a, b) => new Date(b.dataSorteio).getTime() - new Date(a.dataSorteio).getTime())[0] ?? null;
 
-        /**
-         * ======================================================
-         * ✅ CONTEXTO DAS DANÇAS (COM NOME)
-         * ======================================================
-         */
         const nomeSalaoSorteada = possuiSorteio
             ? resolveNomeDanca("DANCA_DE_SALAO", sorteioSalaoAtual?.resultadoSorteio)
             : null;
@@ -300,11 +264,6 @@ export class AvaliacaoService {
             },
         };
 
-        /**
-         * ======================================================
-         * ✅ INJETAR metaDanca nos quesitos de DANÇA
-         * ======================================================
-         */
         const provaPraticaComMeta = provaPratica.map((pp) => ({
             ...pp,
             blocosProvas: pp.blocosProvas.map((bloco) => ({
@@ -354,11 +313,6 @@ export class AvaliacaoService {
                 }),
             })),
         }));
-
-        console.dir(
-            { possuiSorteio, contextoDancas, provaPraticaComMeta },
-            { depth: null, colors: true }
-        );
 
         return {
             provaPratica: provaPraticaComMeta,

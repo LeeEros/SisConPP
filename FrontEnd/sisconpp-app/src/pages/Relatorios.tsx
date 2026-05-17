@@ -213,7 +213,7 @@ export default function Relatorios() {
                 <SideNavBar />
             </div>
 
-            <main className="flex-1 p-6 md:p-8 flex flex-col overflow-y-auto  print:p-0 print:overflow-visible print:bg-white">
+            <main  className="flex-1 p-6 md:p-8 pt-16 md:pt-8 overflow-y-auto print:p-0 print:overflow-visible print:bg-white">
                 
                 {/* CARD UNIFICADO */}
                 <div className="w-full bg-surface-containerLowest rounded-2xl shadow-sm border border-outline-variant flex flex-col min-h-[600px] print:border-none print:shadow-none">

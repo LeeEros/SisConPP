@@ -286,10 +286,10 @@ model BlocoProva {
 }
 
 model Quesitos {
-  idQuesito         Int               @id @default(autoincrement())
+  idQuesito         Int     @id @default(autoincrement())
   nomeQuesito       String
   notaMaximaQuesito Float
-  opcional          Boolean           @default(false)
+  opcional          Boolean @default(false)
 
   BlocoProva        BlocoProva? @relation(fields: [blocoProvaIdBloco], references: [idBloco])
   blocoProvaIdBloco Int?
@@ -308,8 +308,8 @@ model SubQuesitos {
   notaSubequesito Float
 
   quesitoId Int
-  Quesito   Quesitos @relation(fields: [quesitoId], references: [idQuesito])
-  subGrupo          VivenciaSubGrupo?
+  Quesito   Quesitos          @relation(fields: [quesitoId], references: [idQuesito])
+  subGrupo  VivenciaSubGrupo?
 
   subequesitosFilhos   SubQuesitos[]         @relation("SubQuesitosSub")
   subequesitosPai      SubQuesitos[]         @relation("SubQuesitosSub")

@@ -28,13 +28,12 @@ export default function DancaForm({
     buscarDancas
 }: DancaFormProps) {
 
-    // Função para tratar a seleção e já buscar os dados
+    
     const handleTipoChange = (tipo: DancaSalaoTradicional) => {
         setTipoDanca(tipo);
         buscarDancas(tipo);
     };
 
-    // Estilos reutilizáveis
     const labelClass = "block text-sm font-semibold text-neutral-onSurface mb-2";
     const selectWrapperClass = "relative";
     const selectClass = "w-full appearance-none rounded-xl border border-outline bg-surface-containerHigh p-3 pl-10 text-neutral-onSurface focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all text-sm";
@@ -90,12 +89,9 @@ export default function DancaForm({
                 </div>
             </div>
 
-            {/* Bloco 2: Tipo de Dança (Cards Visuais em vez de Radio Buttons) */}
             <div>
                 <label className={labelClass}>Qual tipo de dança será sorteada?</label>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    
-                    {/* Card Tradicional */}
                     <button
                         type="button"
                         onClick={() => handleTipoChange(DancaSalaoTradicional.DANCA_TRADICIONAL)}
@@ -128,7 +124,6 @@ export default function DancaForm({
                         )}
                     </button>
 
-                    {/* Card Salão */}
                     <button
                         type="button"
                         onClick={() => handleTipoChange(DancaSalaoTradicional.DANCA_DE_SALAO)}
