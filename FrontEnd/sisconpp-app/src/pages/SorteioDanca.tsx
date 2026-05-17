@@ -18,7 +18,6 @@ import RoletaSorteio from "../components/Roleta/RoletaSorteio";
 import { Dices, Save, CheckCircle, RotateCcw, Trophy, XCircle } from "lucide-react";
 
 export default function SorteioDancas() {
-    const usuarioLogado = JSON.parse(localStorage.getItem("usuario") || "null");
     const [candidatos, setCandidatos] = useState<Candidato[]>([]);
     const [categorias, setCategorias] = useState<Categoria[]>([]);
     const [dancas, setDancas] = useState<Danca[]>([]);
@@ -36,6 +35,8 @@ export default function SorteioDancas() {
 
     const categoriaAtual = categorias.find((c) => c.idCategoria === categoriaSelecionada);
     const maxSelecionados = categoriaAtual?.sorteioDanca ?? null;
+
+    // ✅ REGRA: se sorteioDanca === 1 => NÃO TEM SORTEIO (só preferência)
     const naoTemSorteio = categoriaAtual?.sorteioDanca === 1;
 
     useEffect(() => {
@@ -101,7 +102,7 @@ export default function SorteioDancas() {
         <div className="flex flex-row min-h-screen w-full bg-neutral-background">
             <SideNavBar />
 
-            <main className="flex-1 p-6 md:p-8 pt-16 md:pt-8 overflow-y-auto">
+            <main className="flex-1 p-6 md:p-8 flex flex-col overflow-y-auto">
                 <div className="w-full bg-surface-containerLowest rounded-2xl shadow-sm border border-outline-variant flex flex-col min-h-[600px]">
                     <div className="p-6 border-b border-outline-variant flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div className="flex items-center gap-3">
@@ -191,7 +192,7 @@ export default function SorteioDancas() {
                                     <div className="w-full max-w-2xl">
                                         <RoletaSorteio
                                             candidatoId={candidatoSelecionado}
-                                            usuarioId={usuarioLogado.idUsuario}
+                                            usuarioId={1}
                                             tipoDanca={tipoDanca}
                                             dancas={dancas.filter((d) => selecionados.includes(d.idDanca))}
                                             onFinish={(resultado) => {

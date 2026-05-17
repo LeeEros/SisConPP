@@ -1,4 +1,26 @@
+version: '3.8'
+
 services:
+  app:
+    image: node:18
+    container_name: node_app
+    working_dir: /usr/src/app
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - '${PORT}:3000'
+    environment:
+      - PORT=${PORT}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+    depends_on:
+      - postgres
+    command: sh -c "npm install && npm run dev"
+
   postgres:
     image: postgres:13
     container_name: postgres_db
@@ -10,13 +32,6 @@ services:
       POSTGRES_DB: ${DB_NAME}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./initdb:/docker-entrypoint-initdb.d
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-        reservations:
-          memory: 128M
 
 volumes:
   postgres_data:

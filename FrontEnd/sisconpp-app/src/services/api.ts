@@ -1,33 +1,20 @@
-import axios, { AxiosRequestHeaders } from "axios";
-import { RT } from "../types/RT";
-import { CTG } from "../types/CTG";
-import { Usuario } from "../types/Usuario";
-import { Candidato, FichaCandidato } from "../types/Candidato";
-import { Concurso } from "../types/Concurso";
-import { Comissao, ComissaoProvaPraticaForm } from "../types/Comissao";
-import {
-  PreferenciaSorteio,
-  Danca,
-  CriarSorteioPayload,
-} from "../types/SorteioDanca";
-import {
-  BlocoProva,
-  ProvaPratica,
-  Quesitos,
-  SubQuesitos,
-} from "../types/ProvaPratica";
-import { ProvaTeorica, ProvaTeoricaF } from "../types/ProvaTeorica";
-import {
-  RelatorioGeralCandidatoDTO,
-  RelatorioRankingDTO,
-  RelatorioIndividualDTO,
-  RelatorioCategoriaDTO,
-} from "../types/Relatorios";
-import { CriarAvaliacaoCompletaDTO } from "../types/Avaliacao";
+import axios from 'axios';
+import { RT } from '../types/RT';
+import { CTG } from '../types/CTG';
+import { Usuario } from '../types/Usuario';
+import { Candidato, FichaCandidato } from '../types/Candidato';
+import { Concurso } from '../types/Concurso';
+import { Comissao, ComissaoProvaPraticaForm } from '../types/Comissao';
+import { PreferenciaSorteio, Danca, CriarSorteioPayload } from '../types/SorteioDanca';
+import { BlocoProva, ProvaPratica, Quesitos, SubQuesitos } from '../types/ProvaPratica';
+import { ProvaTeorica, ProvaTeoricaF } from '../types/ProvaTeorica';
+import { RelatorioGeralCandidatoDTO, RelatorioRankingDTO, RelatorioIndividualDTO, RelatorioCategoriaDTO } from '../types/Relatorios';
+import { CriarAvaliacaoCompletaDTO } from '../types/Avaliacao';
 import { RecursoFormData, StatusRecurso } from "../types/Recurso";
 
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "/api",
+// ---- CONFIGURAÇÃO DO AXIOS ----
+export const api = axios.create({
+  baseURL: "http://localhost:3005",
 });
 
 api.interceptors.request.use((config) => {
@@ -35,7 +22,7 @@ api.interceptors.request.use((config) => {
 
   if (token) {
     if (!config.headers) {
-      config.headers = {} as AxiosRequestHeaders;
+      config.headers = {};
     }
 
     config.headers.Authorization = `Bearer ${token}`;
@@ -43,6 +30,7 @@ api.interceptors.request.use((config) => {
 
   return config;
 });
+
 
 // ---- AUTENTICAÇÃO ----
 export interface LoginRequest {
@@ -61,16 +49,14 @@ export interface LoginResponse {
   message?: string;
 }
 
-export const loginUsuario = async (
-  dados: LoginRequest,
-): Promise<LoginResponse> => {
+export const loginUsuario = async (dados: LoginRequest): Promise<LoginResponse> => {
   const response = await api.post<LoginResponse>("/auth/login", dados);
   return response.data;
 };
 
 // ---- RT ----
 export const cadastrarRT = async (novaRT: RT) => {
-  return await api.post("/rt", novaRT);
+  return await api.post('/rt', novaRT);
 };
 
 export const listarRTs = async () => {
@@ -89,7 +75,7 @@ export const deleteRT = async (id: number) => {
 
 // ---- CTG ----
 export const cadastrarCTG = async (novoCTG: CTG) => {
-  return await api.post("/ctg", novoCTG);
+  return await api.post('/ctg', novoCTG);
 };
 
 export const listarCTGs = async () => {
@@ -108,7 +94,7 @@ export const deleteCTG = async (id: number) => {
 
 //---- Usuarios ----
 export const cadastrarUsuario = async (criarUsuario: Usuario) => {
-  return await api.post("/usuario", criarUsuario);
+  return await api.post('/usuario', criarUsuario);
 };
 
 export const listarUsuarios = async () => {
@@ -167,7 +153,7 @@ export const deletarCandidato = async (id: number) => {
 
 export const criarFichaCandidato = async (fichaCandidato: FichaCandidato) => {
   return await api.post("/candidato/fichaCandidato", fichaCandidato);
-};
+}
 
 export const buscarFichaCandidatoPorId = async (idCandidato: number) => {
   const response = await api.get(`/candidato/fichaCandidato/${idCandidato}`);
@@ -211,17 +197,11 @@ export const deletarComissao = async (id: number) => {
   return response.data ?? true;
 };
 
-export const adicionarAvaliadorComissao = async (
-  usuarioId: number,
-  comissaoId: number,
-) => {
+export const adicionarAvaliadorComissao = async (usuarioId: number, comissaoId: number) => {
   return await api.post("/comissao/avaliador", { usuarioId, comissaoId });
 };
 
-export const adicionarAuxiliarComissao = async (
-  usuarioId: number,
-  comissaoId: number,
-) => {
+export const adicionarAuxiliarComissao = async (usuarioId: number, comissaoId: number) => {
   return await api.post("/comissao/auxiliar", { usuarioId, comissaoId });
 };
 
@@ -230,18 +210,13 @@ export const listarUsuariosComissao = async () => {
   return response.data;
 };
 
-export const deletarUsuarioComissao = async (
-  idUsuario: number,
-  idComissao: number,
-) => {
+export const deletarUsuarioComissao = async (idUsuario: number, idComissao: number) => {
   return await api.delete(`/comissao/usuario/${idUsuario}/${idComissao}`);
 };
 
-export const atribuirAvaliacaoComissao = async (
-  atribuirAvaliacao: ComissaoProvaPraticaForm,
-) => {
+export const atribuirAvaliacaoComissao = async (atribuirAvaliacao: ComissaoProvaPraticaForm) => {
   return await api.post("/comissao/atribuir", atribuirAvaliacao);
-};
+}
 
 //---- Sorteio Danca ----
 
@@ -255,9 +230,7 @@ export const getDancasSalao = async (): Promise<Danca[]> => {
   return response.data;
 };
 
-export const criarPreferencia = async (
-  criarPreferencia: PreferenciaSorteio,
-) => {
+export const criarPreferencia = async (criarPreferencia: PreferenciaSorteio) => {
   return await api.post("/preferenciaSorteioDanca", criarPreferencia);
 };
 
@@ -298,9 +271,7 @@ export async function buscarPorCategoria(idCategoria: number) {
 }
 
 export const atualizarProvaPratica = async (provaPratica: ProvaPratica) => {
-  return api.put(
-    `/provaPratica?categoriaId/${provaPratica.idProvaPratica}, provaPratica`,
-  );
+  return api.put(`/provaPratica?categoriaId/${provaPratica.idProvaPratica}, provaPratica`);
 };
 
 //---- Blocos Prova ----
@@ -351,26 +322,17 @@ export const deletarSubQuesito = async (idSubQuesito: number) => {
 
 //---- Avaliacação ----
 
-export async function criarAvaliacaoCompleta(
-  payload: CriarAvaliacaoCompletaDTO,
-) {
+export async function criarAvaliacaoCompleta(payload: CriarAvaliacaoCompletaDTO) {
   const { data } = await api.post("/avaliacao/avaliacaoCompleta", payload);
   return data;
 }
 
-export async function buscarEstruturaAvaliacao(
-  avaliadorId: number,
-  candidatoId: number,
-) {
-  const response = await api.get<{ provaPratica: ProvaPratica }>(
-    `/avaliacao/avaliacao/${avaliadorId}/${candidatoId}`,
-  );
+export async function buscarEstruturaAvaliacao(avaliadorId: number, candidatoId: number) {
+  const response = await api.get<{ provaPratica: ProvaPratica }>(`/avaliacao/avaliacao/${avaliadorId}/${candidatoId}`);
   return response.data.provaPratica;
 }
 
-export async function criarAvaliacaoTeorica(
-  payload: CriarAvaliacaoCompletaDTO,
-) {
+export async function criarAvaliacaoTeorica(payload: CriarAvaliacaoCompletaDTO) {
   const { data } = await api.post("/avaliacao/avaliacaoTeorica", payload);
   return data;
 }
@@ -388,64 +350,51 @@ export async function listarAvaliacoes() {
 //---- Relatoriois ----
 export async function relatorioGeral(concursoId: number) {
   const response = await api.get<RelatorioGeralCandidatoDTO[]>(
-    `/relatorios/relatorio-geral/${concursoId}`,
+    `/relatorios/relatorio-geral/${concursoId}`
   );
   return response.data;
-}
+};
 
-export async function rankingPorCategoria(
-  concursoId: number,
-  categoriaId: number,
-) {
+export async function rankingPorCategoria(concursoId: number, categoriaId: number) {
   const response = await api.get<RelatorioRankingDTO[]>(
-    `/relatorios/ranking/${concursoId}/${categoriaId}`,
+    `/relatorios/ranking/${concursoId}/${categoriaId}`
   );
   return response.data;
-}
+};
 
 export async function RelatorioIndividual(candidatoId: number) {
   const response = await api.get<RelatorioIndividualDTO>(
-    `/relatorios/individual/${candidatoId}`,
+    `/relatorios/individual/${candidatoId}`
   );
   return response.data;
-}
+};
 
 export async function getRelatorioPorCategoriaConcurso(
   categoriaId: number,
-  concursoIdConcurso: number,
+  concursoIdConcurso: number
 ): Promise<RelatorioCategoriaDTO[]> {
-  const response = await api.get<RelatorioCategoriaDTO[]>(
-    `/relatorios/relatorioDetalhado/${categoriaId}/${concursoIdConcurso}`,
-  );
+  const response = await api.get<RelatorioCategoriaDTO[]>(`/relatorios/relatorioDetalhado/${categoriaId}/${concursoIdConcurso}`);
   console.log(response);
   return response.data;
 }
 
 //---- Recurso ----
 
-export async function solicitarRecurso(formData: RecursoFormData) {
+export async function solicitarRecurso(formData: RecursoFormData){
   const { data } = await api.post("/recurso", formData);
   return data;
 }
 
-export async function listarRecursos() {
+export async function listarRecursos(){
   const response = await api.get("/recurso");
   return response.data;
 }
 
-export const alterarStatusRecurso = async (
-  idRecurso: number,
-  status: StatusRecurso,
-) => {
+export const alterarStatusRecurso = async (idRecurso: number, status: StatusRecurso) => {
   return await api.put(`/recurso/${idRecurso}`, { status });
-};
+}
 
-export async function listarQuesitosAvaliadosPorCandidatoEAvaliador(
-  candidatoId: number,
-  avaliadorId: number,
-) {
-  const response = await api.get(
-    `/recurso/candidato/${candidatoId}/avaliador/${avaliadorId}`,
-  );
+export async function listarQuesitosAvaliadosPorCandidatoEAvaliador(candidatoId: number, avaliadorId: number) {
+  const response = await api.get(`/recurso/candidato/${candidatoId}/avaliador/${avaliadorId}`);
   return response.data;
 }
