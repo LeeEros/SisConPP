@@ -388,10 +388,14 @@ export class RelatoriosService {
             const notaPratica = ficha?.notaFinalProvasPraticas ?? 0;
             const notaFinal = ficha?.notaCandidato ?? (notaTeorica + notaPratica);
 
-            // 🔹 DETALHAMENTO POR AVALIADOR
+            // 🔹 DETALHAMENTO POR AVALIADOR (APENAS PROVAS ARTÍSTICAS / ORAIS / DOTES)
             const mapaAvaliadores = new Map<number, AvaliadorResumo>();
 
             (c.avalicoes ?? []).forEach((av) => {
+                // 🛑 CORREÇÃO: Se a avaliação for da Prova Teórica, pula! 
+                // Isso impede que ela vire uma coluna "BLOCO" no meio dos avaliadores humanos.
+                if (av.provaTeoricaId) return;
+
                 if (!av.avaliadorId) return;
 
                 const idAvaliador = av.avaliadorId;
@@ -415,12 +419,15 @@ export class RelatoriosService {
 
                 const avaliador = mapaAvaliadores.get(idAvaliador)!;
 
-                avaliador.blocos.push({
-                    nomeBloco,
-                    notaFinalBloco: notaBloco
-                });
-
-                avaliador.totalAvaliador += notaBloco;
+                // Evita adicionar o mesmo bloco repetido para o mesmo avaliador se houver duplicidade no banco
+                const blocoJaExiste = avaliador.blocos.some(b => b.nomeBloco === nomeBloco);
+                if (!blocoJaExiste) {
+                    avaliador.blocos.push({
+                        nomeBloco,
+                        notaFinalBloco: notaBloco
+                    });
+                    avaliador.totalAvaliador += notaBloco;
+                }
             });
 
             return {
@@ -429,9 +436,13 @@ export class RelatoriosService {
                 CTG: c.CTG?.nomeCTG ?? "",
                 categoria: c.Categoria?.nomeCategoria ?? "",
                 concurso: c.Concurso?.nomeConcurso ?? "",
+
+                // Enviados explicitamente para alimentar as colunas fixas do Front
                 notaProvaTeorica: notaTeorica,
                 notaProvasPraticas: notaPratica,
                 notaFinal,
+
+                // Retorna apenas os avaliadores humanos limpos
                 avaliadores: Array.from(mapaAvaliadores.values())
             };
         });
@@ -444,7 +455,6 @@ export class RelatoriosService {
             posicao: idx + 1
         }));
     }
-
 
 }
 
