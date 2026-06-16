@@ -161,11 +161,16 @@ export default function AtribuicaoAvaliacaoForm({ comissao, onClose, onSaved }: 
                                 required
                             >
                                 <option value="">-- Selecione --</option>
-                                {blocos.map((b) => (
-                                    <option key={b.idBloco} value={b.idBloco}>
-                                        {b.nomeBloco}
-                                    </option>
-                                ))}
+                                {blocos.map((b) => {
+                                    const nomeCategorias = (b as any).ProvaPratica?.categorias
+                                        ?.map((c: any) => c.nomeCategoria)
+                                        .join(" / ");
+                                    return (
+                                        <option key={b.idBloco} value={b.idBloco}>
+                                            {b.nomeBloco} {nomeCategorias ? `- ${nomeCategorias}` : ""}
+                                        </option>
+                                    );
+                                })}
                             </select>
                         </div>
                     )}
