@@ -52,8 +52,7 @@ export default function ProvaAccordion({
         </div>
       </div>
 
-      {open && (
-        <div className="p-4 bg-gray-50 space-y-4">
+      <div className={`p-4 bg-gray-50 space-y-4 ${open ? "block" : "hidden"}`}>
           {prova.blocosProvas.length === 0 && (
             <p className="text-sm text-gray-400 italic">
               Nenhum bloco cadastrado.
@@ -71,8 +70,7 @@ export default function ProvaAccordion({
               categoriaSelecionada={categoriaSelecionada}
             />
           ))}
-        </div>
-      )}
+      </div>
     </div>
   );
 }

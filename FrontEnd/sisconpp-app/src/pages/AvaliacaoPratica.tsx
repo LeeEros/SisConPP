@@ -28,6 +28,8 @@ export default function AvaliacaoPage() {
     const [comentarios, setComentarios] = useState<Record<number, string>>({});
     const [categorias, setCategorias] = useState<Categoria[]>([]);
     const [ficha, setFicha] = useState<FichaCandidatoProvaPratica | null>(null);
+    const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+    const [confirmName, setConfirmName] = useState("");
 
     // --- Estilos Padronizados ---
     const selectClass = "w-full rounded-xl border border-outline bg-surface-containerHigh p-2.5 text-neutral-onSurface focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all text-sm";
@@ -112,13 +114,22 @@ export default function AvaliacaoPage() {
         fetchFicha();
     }, [candidatoSelecionado]);
 
-    const handleSalvarAvaliacao = async () => {
-        try {
-            if (!avaliadorSelecionado || !candidatoSelecionado) {
-                toast.error("Selecione candidato e avaliador");
-                return;
-            }
+    const handleSalvarAvaliacao = () => {
+        if (!avaliadorSelecionado || !candidatoSelecionado) {
+            toast.error("Selecione candidato e avaliador");
+            return;
+        }
+        setShowConfirmDialog(true);
+        setConfirmName("");
+    };
 
+    const confirmAndSave = async () => {
+        const candidato = candidatos.find(c => c.idCandidato === candidatoSelecionado);
+        if (!candidato || confirmName.trim().toLowerCase() !== candidato.nomeCompleto.trim().toLowerCase()) {
+            toast.error("Nome do candidato não confere. Verifique a ortografia.");
+            return;
+        }
+        try {
             const avaliadorId = usuarioLogado?.funcao === "AVALIADOR"
                 ? usuarioLogado.id
                 : avaliadorSelecionado;
@@ -165,6 +176,7 @@ export default function AvaliacaoPage() {
             setAvaliadorSelecionado(null);
             setProvasSelecionadas([]);
             setFicha(null);
+            setShowConfirmDialog(false);
 
         } catch (error) {
             toast.error("Erro ao salvar avaliações");
@@ -175,6 +187,36 @@ export default function AvaliacaoPage() {
     return (
         <div className="flex min-h-screen w-full bg-neutral-background">
             <SideNavBar />
+
+            {/* Modal de Confirmação */}
+            {showConfirmDialog && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+                    <div className="bg-surface-containerLowest w-full max-w-md p-6 rounded-2xl shadow-xl border border-outline-variant">
+                        <h2 className="text-xl font-bold text-primary-dark mb-4">Confirmar Avaliação</h2>
+                        <p className="text-sm text-neutral-onSurface mb-4">
+                            Para salvar a avaliação, digite o nome do candidato abaixo para validar:
+                            <br />
+                            <strong className="text-primary mt-1 inline-block text-base">{candidatos.find(c => c.idCandidato === candidatoSelecionado)?.nomeCompleto}</strong>
+                        </p>
+                        <input
+                            type="text"
+                            className={selectClass}
+                            value={confirmName}
+                            onChange={(e) => setConfirmName(e.target.value)}
+                            placeholder="Digite o nome do candidato..."
+                            autoFocus
+                        />
+                        <div className="mt-6 flex justify-end gap-3">
+                            <button onClick={() => setShowConfirmDialog(false)} className="px-4 py-2 text-sm font-semibold text-neutral-onSurface border border-outline rounded-xl hover:bg-surface-containerHigh transition-colors">
+                                Cancelar
+                            </button>
+                            <button onClick={confirmAndSave} className="px-4 py-2 text-sm font-semibold text-primary-onContainer bg-primary-container rounded-xl hover:opacity-90 transition-colors">
+                                Confirmar e Salvar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <main className="flex-1 p-6 md:p-8 flex flex-col overflow-y-auto">
                 
@@ -236,6 +278,8 @@ export default function AvaliacaoPage() {
                                     onChange={(e) => {
                                         const id = e.target.value ? Number(e.target.value) : null;
                                         setCandidatoSelecionado(id);
+                                        setNotas({});
+                                        setComentarios({});
                                         if (id) {
                                             const candidato = candidatos.find(c => c.idCandidato === id);
                                             if (candidato) setCategoriaSelecionada(candidato.categoriaId ?? null);

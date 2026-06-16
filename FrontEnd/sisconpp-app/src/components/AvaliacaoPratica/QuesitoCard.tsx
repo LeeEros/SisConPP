@@ -25,15 +25,14 @@ function isVivenciaQuesito(nome?: string) {
 export default function QuesitoCard({
     quesito,
     notas,
+    comentarios,
     onChangeNota,
     onChangeComentario,
 }: Props) {
     const [open, setOpen] = useState(true);
-    const [comentario, setComentario] = useState("");
 
     const handleComentarioChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const value = e.target.value;
-        setComentario(value);
         onChangeComentario?.(quesito.idQuesito, value);
     };
 
@@ -102,8 +101,7 @@ export default function QuesitoCard({
                 </div>
             </div>
 
-            {open && (
-                <div className="px-4 pb-4 space-y-4 bg-gray-50 border-t border-gray-100 pt-4">
+            <div className={`px-4 pb-4 space-y-4 bg-gray-50 border-t border-gray-100 pt-4 ${open ? "block" : "hidden"}`}>
                     {quesito.subQuesitos.length === 0 && (
                         <p className="text-sm text-gray-400 italic text-center py-2">Nenhum subquesito cadastrado.</p>
                     )}
@@ -151,15 +149,14 @@ export default function QuesitoCard({
                             Comentário do Avaliador <span className="text-gray-400 font-normal text-xs"></span>
                         </label>
                         <textarea
-                            value={comentario}
+                            value={comentarios?.[quesito.idQuesito] ?? ""}
                             onChange={handleComentarioChange}
                             className="w-full p-3 rounded-xl bg-white border border-gray-300 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all resize-none shadow-sm"
                             rows={3}
                             placeholder="Registre aqui suas observações sobre este quesito..."
                         />
                     </div>
-                </div>
-            )}
+            </div>
         </div>
     );
 }

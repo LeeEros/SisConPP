@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "react-toastify";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { BlocoProvaDTO, QuesitoDTO } from "../../types/Avaliacao";
 import QuesitoCard from "./QuesitoCard";
@@ -54,7 +55,7 @@ export default function BlocoAccordion({
       if (selecionados.length < limiteOpcionais) {
         setSelecionados([...selecionados, id]);
       } else {
-        alert(`Você só pode selecionar até ${limiteOpcionais} quesitos opcionais neste bloco.`);
+        toast.warn(`Você só pode selecionar até ${limiteOpcionais} quesitos opcionais neste bloco.`);
       }
     }
   };
@@ -84,8 +85,7 @@ export default function BlocoAccordion({
         </div>
       </div>
 
-      {open && (
-        <div className="p-4 bg-gray-50 space-y-4">
+      <div className={`p-4 bg-gray-50 space-y-4 ${open ? "block" : "hidden"}`}>
           {bloco.quesitos.length === 0 && (
             <p className="text-sm text-gray-400 italic">Nenhum quesito cadastrado.</p>
           )}
@@ -141,8 +141,7 @@ export default function BlocoAccordion({
               />
             );
           })}
-        </div>
-      )}
+      </div>
     </div>
   );
 }
