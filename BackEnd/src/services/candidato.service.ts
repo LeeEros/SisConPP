@@ -161,6 +161,56 @@ class CandidatoService {
         }
     }
 
+    async buscarCandidatosPorAvaliador(avaliadorId: number) {
+        try {
+            const comissoes = await this.prisma.comissaoUsuario.findMany({
+                where: { usuarioId: avaliadorId },
+                include: { Comissao: { include: { atribuicoes: true } } }
+            });
+
+            // Cria as condições baseadas nos concursos das comissões e nas categorias que elas podem avaliar
+            const whereOr = comissoes.flatMap(cu => {
+                const concursoId = cu.Comissao?.concursoId;
+                if (!concursoId) return [];
+
+                const atribuicoes = cu.Comissao?.atribuicoes || [];
+
+                // Se a comissão não tem atribuições definidas, não libera acesso a ninguém
+                if (atribuicoes.length === 0) return [];
+
+                // Se a comissão tem uma atribuição genérica (categoria null), avalia o concurso todo
+                const avaliaTodasCategorias = atribuicoes.some(a => a.categoriaId === null);
+
+                if (avaliaTodasCategorias) {
+                    return [{ concursoIdConcurso: concursoId }];
+                }
+
+                const categoriasDaComissao = atribuicoes.map(a => a.categoriaId).filter(id => id !== null) as number[];
+
+                return [{
+                    concursoIdConcurso: concursoId,
+                    categoriaId: { in: categoriasDaComissao }
+                }];
+            });
+
+            if (whereOr.length === 0) return [];
+
+            const candidatos = await this.prisma.candidato.findMany({
+                where: {
+                    OR: whereOr
+                },
+                include: {
+                    Categoria: true,
+                    CTG: true
+                }
+            });
+
+            return candidatos;
+        } catch (error) {
+            throw new Error("Erro ao buscar candidatos vinculados ao avaliador.");
+        }
+    }
+
     async deletarCandidato(idCandidato: number) {
         try {
             console.log("IdCandidato:", idCandidato);

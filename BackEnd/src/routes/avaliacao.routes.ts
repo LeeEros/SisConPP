@@ -5,31 +5,31 @@ import { permitirFuncoes } from "../middlewares/roleMiddleware";
 
 const router = express.Router();
 
-router.post("/avaliacaoCompleta", authMiddleware, permitirFuncoes(["SECRETARIO", "AVALIADOR"]), async (req: Request, res: Response) => {
+router.post("/avaliacaoCompleta", authMiddleware, permitirFuncoes(["ADMINISTRADOR", "SECRETARIO", "AVALIADOR"]), async (req: Request, res: Response) => {
     await avaliacaoController.criarAvaliacaoCompleta(req, res);
 });
 
-router.post("/avaliacaoTeorica", authMiddleware, permitirFuncoes(["SECRETARIO", "AVALIADOR"]), async (req: Request, res: Response) => {
+router.post("/avaliacaoTeorica", authMiddleware, permitirFuncoes(["ADMINISTRADOR", "SECRETARIO", "AVALIADOR"]), async (req: Request, res: Response) => {
     await avaliacaoController.criarAvaliacaoTeorica(req, res);
 });
 
-router.get("/avaliacao/:idAvaliacao", authMiddleware, permitirFuncoes(["SECRETARIO", "AVALIADOR"]), async (req: Request, res: Response) => {
+router.get("/avaliacao/:idAvaliacao", authMiddleware, permitirFuncoes(["ADMINISTRADOR", "SECRETARIO", "AVALIADOR"]), async (req: Request, res: Response) => {
     await avaliacaoController.visualizarAvaliacoes(req, res);
 });
 
-router.put("/avaliacao/:idAvaliacao", authMiddleware, permitirFuncoes(["SECRETARIO", "AVALIADOR"]), async (req: Request, res: Response) => {
+router.put("/avaliacao/:idAvaliacao", authMiddleware, permitirFuncoes(["ADMINISTRADOR", "SECRETARIO", "AVALIADOR"]), async (req: Request, res: Response) => {
     await avaliacaoController.editarAvaliacao(req, res);
 });
 
-router.get( "/avaliacao/:avaliadorId/:candidatoId", authMiddleware, permitirFuncoes(["SECRETARIO", "AVALIADOR"]), async (req: Request, res: Response) => {
+router.get( "/avaliacao/:avaliadorId/:candidatoId", authMiddleware, permitirFuncoes(["ADMINISTRADOR", "SECRETARIO", "AVALIADOR"]), async (req: Request, res: Response) => {
     await avaliacaoController.buscarEstruturaCompleta(req, res);
 });
 
-router.get( "/avaliacaoTeorica/:candidatoId", authMiddleware, permitirFuncoes(["SECRETARIO", "AVALIADOR"]), async (req: Request, res: Response) => {
+router.get( "/avaliacaoTeorica/:candidatoId", authMiddleware, permitirFuncoes(["ADMINISTRADOR", "SECRETARIO", "AVALIADOR"]), async (req: Request, res: Response) => {
     await avaliacaoController.buscarEstruturaTeorica(req, res);
 });
 
-router.get("/avaliacoes", authMiddleware, permitirFuncoes(["SECRETARIO", "AVALIADOR", "AUXILIAR"]), async (req: Request, res: Response) => {
+router.get("/avaliacoes", authMiddleware, permitirFuncoes(["ADMINISTRADOR", "SECRETARIO", "AVALIADOR", "AUXILIAR"]), async (req: Request, res: Response) => {
     await avaliacaoController.listarAvaliacoes(req, res);
 });
 

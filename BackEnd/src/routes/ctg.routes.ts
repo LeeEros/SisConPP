@@ -5,23 +5,23 @@ import { permitirFuncoes } from "../middlewares/roleMiddleware";
 
 const router = express.Router();
 
-router.post('/', authMiddleware, permitirFuncoes(["SECRETARIO"]), async (req: Request, res: Response) => {
+router.post('/', authMiddleware, permitirFuncoes(["ADMINISTRADOR", "SECRETARIO"]), async (req: Request, res: Response) => {
     await CTGController.criarCTG(req, res);
 });
 
-router.put('/:id', authMiddleware, permitirFuncoes(["SECRETARIO"]), async (req: Request, res: Response) => {
+router.put('/:id', authMiddleware, permitirFuncoes(["ADMINISTRADOR", "SECRETARIO"]), async (req: Request, res: Response) => {
     await CTGController.atualizarCTG(req, res);
 });
 
-router.get('/:id', authMiddleware, permitirFuncoes(["SECRETARIO"]), async (req: Request, res: Response) => {
+router.get('/:id', authMiddleware, permitirFuncoes(["ADMINISTRADOR", "SECRETARIO"]), async (req: Request, res: Response) => {
     await CTGController.buscarCTGPorId(req, res);
 });
 
-router.get('/', authMiddleware, permitirFuncoes(["SECRETARIO"]), async (req: Request, res: Response) => {
+router.get('/', authMiddleware, permitirFuncoes(["ADMINISTRADOR", "SECRETARIO"]), async (req: Request, res: Response) => {
     await CTGController.buscarCTGs(req, res);
 });
 
-router.delete('/:id', authMiddleware, permitirFuncoes(["SECRETARIO"]), async (req: Request, res: Response) => {
+router.delete('/:id', authMiddleware, permitirFuncoes(["ADMINISTRADOR", "SECRETARIO"]), async (req: Request, res: Response) => {
     await CTGController.deletarCTG(req, res);
 });
 

@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import imgLogoLight from "../../assets/Logo-Light-SisConPP.png";
 
-type UserRole = "SECRETARIO" | "AVALIADOR" | "AUXILIAR";
+type UserRole = "SECRETARIO" | "AVALIADOR" | "AUXILIAR" | "ADMINISTRADOR";
 
 const Sidebar: FC = () => {
   const [isOpen, setIsOpen] = useState(true);
@@ -43,21 +43,21 @@ const Sidebar: FC = () => {
   };
 
   const menuItems = [
-    { label: "Dashboard", icon: LayoutDashboard, href: "/tela-inicial", roles: ["SECRETARIO", "AVALIADOR", "AUXILIAR"] },
-    { label: "CTGs", icon: Building2, href: "/ctg", roles: ["SECRETARIO"] },
-    { label: "RTs", icon: CopyPlus, href: "/rt", roles: ["SECRETARIO"] },
-    { label: "Concursos", icon: LayoutDashboard, href: "/concurso", roles: ["SECRETARIO"] },
-    { label: "Candidatos", icon: Users, href: "/candidatos", roles: ["SECRETARIO"] },
-    { label: "Avaliadores", icon: BookText, href: "/avaliadores", roles: ["SECRETARIO"] },
-    { label: "Auxiliar", icon: User, href: "/auxiliares", roles: ["SECRETARIO"] },
-    { label: "Comissões", icon: Users, href: "/comissao", roles: ["SECRETARIO"] },
-    { label: "Sortear Danças", icon: Music, href: "/sorteio-danca", roles: ["SECRETARIO", "AUXILIAR"] },
-    { label: "Planilhas Prática", icon: FilePlus, href: "/prova-pratica-criacao", roles: ["SECRETARIO"] },
-    { label: "Prova Teórica", icon: BookPlus, href: "/prova-teorica-criacao", roles: ["SECRETARIO"] },
-    { label: "Avaliação Prática", icon: SquareMenu, href: "/avaliacao-pratica", roles: ["SECRETARIO", "AVALIADOR"] },
-    { label: "Avaliação Teórica", icon: BookType, href: "/avaliacao-teorica", roles: ["SECRETARIO"] },
-    { label: "Relatórios", icon: BookText, href: "/relatorios", roles: ["SECRETARIO"] },
-    { label: "Recursos", icon: Scale, href: "/recursos", roles: ["SECRETARIO"] },
+    { label: "Dashboard", icon: LayoutDashboard, href: "/tela-inicial", roles: ["SECRETARIO", "AVALIADOR", "AUXILIAR", "ADMINISTRADOR"] },
+    { label: "CTGs", icon: Building2, href: "/ctg", roles: ["SECRETARIO", "ADMINISTRADOR"] },
+    { label: "RTs", icon: CopyPlus, href: "/rt", roles: ["SECRETARIO", "ADMINISTRADOR"] },
+    { label: "Concursos", icon: LayoutDashboard, href: "/concurso", roles: ["SECRETARIO", "ADMINISTRADOR"] },
+    { label: "Candidatos", icon: Users, href: "/candidatos", roles: ["SECRETARIO", "ADMINISTRADOR"] },
+    { label: "Avaliadores", icon: BookText, href: "/avaliadores", roles: ["SECRETARIO", "ADMINISTRADOR"] },
+    { label: "Auxiliar", icon: User, href: "/auxiliares", roles: ["SECRETARIO", "ADMINISTRADOR"] },
+    { label: "Comissões", icon: Users, href: "/comissao", roles: ["SECRETARIO", "ADMINISTRADOR"] },
+    { label: "Sortear Danças", icon: Music, href: "/sorteio-danca", roles: ["SECRETARIO", "AUXILIAR", "ADMINISTRADOR"] },
+    { label: "Planilhas Prática", icon: FilePlus, href: "/prova-pratica-criacao", roles: ["SECRETARIO", "ADMINISTRADOR"] },
+    { label: "Prova Teórica", icon: BookPlus, href: "/prova-teorica-criacao", roles: ["SECRETARIO", "ADMINISTRADOR"] },
+    { label: "Avaliação Prática", icon: SquareMenu, href: "/avaliacao-pratica", roles: ["SECRETARIO", "AVALIADOR", "ADMINISTRADOR"] },
+    { label: "Avaliação Teórica", icon: BookType, href: "/avaliacao-teorica", roles: ["SECRETARIO", "ADMINISTRADOR"] },
+    { label: "Relatórios", icon: BookText, href: "/relatorios", roles: ["SECRETARIO", "ADMINISTRADOR"] },
+    { label: "Recursos", icon: Scale, href: "/recursos", roles: ["SECRETARIO", "ADMINISTRADOR"] },
   ];
 
   const filteredMenuItems = userRole

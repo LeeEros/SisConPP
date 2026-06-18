@@ -5,7 +5,7 @@ import { permitirFuncoes } from "../middlewares/roleMiddleware";
 
 const router = express.Router();
 
-router.post("/", authMiddleware, permitirFuncoes(["SECRETARIO", "AUXILIAR"]), async (req: Request, res: Response) => {
+router.post("/", authMiddleware, permitirFuncoes(["ADMINISTRADOR", "SECRETARIO", "AUXILIAR"]), async (req: Request, res: Response) => {
     await sorteioDancaController.realizarSorteio(req, res);
 });
 

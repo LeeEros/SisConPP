@@ -6,19 +6,19 @@ import { permitirFuncoes } from "../middlewares/roleMiddleware";
 
 const router = express.Router();
 
-router.get( "/relatorio-geral/:concursoId", authMiddleware, permitirFuncoes(["SECRETARIO"]), async (req:Request, res: Response) => {
+router.get( "/relatorio-geral/:concursoId", authMiddleware, permitirFuncoes(["ADMINISTRADOR", "SECRETARIO"]), async (req:Request, res: Response) => {
  await relatoriosController.relatorioGeralPorConcurso(req, res);
 });
 
-router.get( "/ranking/:concursoId/:categoriaId", authMiddleware, permitirFuncoes(["SECRETARIO"]), async (req: Request, res: Response) => {
+router.get( "/ranking/:concursoId/:categoriaId", authMiddleware, permitirFuncoes(["ADMINISTRADOR", "SECRETARIO"]), async (req: Request, res: Response) => {
         await relatoriosController.rankingPorCategoria(req, res);
 });
 
-router.get( "/individual/:candidatoId", authMiddleware, permitirFuncoes(["SECRETARIO"]), async (req: Request, res: Response) => {
+router.get( "/individual/:candidatoId", authMiddleware, permitirFuncoes(["ADMINISTRADOR", "SECRETARIO"]), async (req: Request, res: Response) => {
         await relatoriosController.relatorioIndividualDetalhado(req, res);
 });
 
-router.get( "/relatorioDetalhado/:categoriaId/:concursoIdConcurso/", authMiddleware, permitirFuncoes(["SECRETARIO"]), async (req: Request, res: Response) => {
+router.get( "/relatorioDetalhado/:categoriaId/:concursoIdConcurso/", authMiddleware, permitirFuncoes(["ADMINISTRADOR", "SECRETARIO"]), async (req: Request, res: Response) => {
         await relatoriosController.gerarRelatorioPorCategoriaConcurso(req, res);
 });
 

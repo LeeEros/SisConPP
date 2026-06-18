@@ -74,6 +74,11 @@ class BlocoProvaService {
                     idBloco: 'asc'
                 },
                 include: {
+                    ProvaPratica: {
+                        include: {
+                            categorias: true
+                        }
+                    },
                     quesitos: {
                         orderBy: {
                             idQuesito: 'asc'

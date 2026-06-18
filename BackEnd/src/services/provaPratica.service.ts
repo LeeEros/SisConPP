@@ -50,6 +50,7 @@ class ProvaPraticaService {
         try {
             const provasPraticas = await prisma.provaPratica.findMany({
                 include: {
+                    categorias: true,
                     blocosProvas: {
                         include: {
                             quesitos: {
@@ -128,4 +129,3 @@ class ProvaPraticaService {
 
 const provaPraticaService = new ProvaPraticaService();
 export default provaPraticaService;
-

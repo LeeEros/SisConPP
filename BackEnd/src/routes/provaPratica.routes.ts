@@ -5,23 +5,23 @@ import { permitirFuncoes } from "../middlewares/roleMiddleware";
 
 const router = express.Router();
 
-router.post("/", authMiddleware, permitirFuncoes(["SECRETARIO"]), async (req: Request, res: Response) => {
+router.post("/", authMiddleware, permitirFuncoes(["ADMINISTRADOR", "SECRETARIO"]), async (req: Request, res: Response) => {
     await ProvaPraticaController.criarProvaPratica(req, res);
 });
 
-router.get("/:id", authMiddleware, permitirFuncoes(["SECRETARIO"]), async (req: Request, res: Response) => {
+router.get("/:id", authMiddleware, permitirFuncoes(["ADMINISTRADOR", "SECRETARIO"]), async (req: Request, res: Response) => {
     await ProvaPraticaController.buscarProvaPraticaPorId(req, res);
 });
 
-router.get("/", authMiddleware, permitirFuncoes(["SECRETARIO"]), async (req: Request, res: Response) => {
+router.get("/", authMiddleware, permitirFuncoes(["ADMINISTRADOR", "SECRETARIO"]), async (req: Request, res: Response) => {
     await ProvaPraticaController.buscarProvasPraticas(req, res);
 });
 
-router.get("/categoria/:idCategoria", authMiddleware, permitirFuncoes(["SECRETARIO"]), async (req: Request, res: Response) => {
+router.get("/categoria/:idCategoria", authMiddleware, permitirFuncoes(["ADMINISTRADOR", "SECRETARIO"]), async (req: Request, res: Response) => {
     await ProvaPraticaController.buscarPorCategoria(req, res);
 });
 
-router.put("/:id", authMiddleware, permitirFuncoes(["SECRETARIO"]), async (req: Request, res: Response) => {
+router.put("/:id", authMiddleware, permitirFuncoes(["ADMINISTRADOR", "SECRETARIO"]), async (req: Request, res: Response) => {
     await ProvaPraticaController.atualizarProvaPratica(req, res);
 });
 

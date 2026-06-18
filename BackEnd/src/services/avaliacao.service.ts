@@ -190,19 +190,19 @@ export class AvaliacaoService {
          * 📋 PROVAS / BLOCOS / QUESITOS
          * ======================================================
          */
-        const provaPratica = await this.prisma.provaPratica.findMany({
+        
+        // 1️⃣ Busca todas as atribuições que as comissões deste avaliador possuem
+        const comissoesDoAvaliador = await this.prisma.comissaoUsuario.findMany({
+            where: { usuarioId: avaliadorId },
+            include: { Comissao: { include: { atribuicoes: true } } }
+        });
+        const atribuicoes = comissoesDoAvaliador.flatMap(c => c.Comissao?.atribuicoes || []);
+
+        // 2️⃣ Busca as provas práticas da categoria do candidato (sem o filtro restrito do Prisma)
+        let provaPratica = await this.prisma.provaPratica.findMany({
             where: {
                 categorias: {
                     some: { idCategoria: candidato.categoriaId },
-                },
-                comissaoProvaPraticas: {
-                    some: {
-                        Comissao: {
-                            usuarios: {
-                                some: { usuarioId: avaliadorId },
-                            },
-                        },
-                    },
                 },
                 ...(provasSelecionadas?.length
                     ? { idProvaPratica: { in: provasSelecionadas } }
@@ -220,6 +220,38 @@ export class AvaliacaoService {
                 },
             },
         });
+
+        // 3️⃣ Filtra as Provas e Blocos de acordo com as atribuições liberadas para a comissão
+        provaPratica = provaPratica
+            .map(prova => {
+                // Tem acesso total se a atribuição for geral da Categoria OU geral desta Prova
+                const temAcessoTotalProva = atribuicoes.some(a => 
+                    (a.categoriaId === candidato.categoriaId && !a.provaPraticaId && !a.blocoProvaId) ||
+                    (a.provaPraticaId === prova.idProvaPratica && !a.blocoProvaId)
+                );
+
+                // Filtra os blocos e quesitos:
+                const blocosFiltrados = prova.blocosProvas
+                    .map(bloco => {
+                        const temAcessoTotalBloco = temAcessoTotalProva || atribuicoes.some(a => a.blocoProvaId === bloco.idBloco);
+                        
+                        const quesitosFiltrados = bloco.quesitos.filter(quesito => 
+                            temAcessoTotalBloco
+                        );
+
+                        return quesitosFiltrados.length > 0 ? {
+                            ...bloco,
+                            quesitos: quesitosFiltrados
+                        } : null;
+                    })
+                    .filter((bloco): bloco is typeof prova.blocosProvas[0] => bloco !== null);
+
+                return blocosFiltrados.length > 0 ? {
+                    ...prova,
+                    blocosProvas: blocosFiltrados
+                } : null;
+            })
+            .filter((prova): prova is typeof provaPratica[0] => prova !== null);
 
         /**
          * ======================================================
@@ -475,6 +507,38 @@ export class AvaliacaoService {
         return provasTeoricas;
     }
 
+    async editarAvaliacaoTeorica(
+        idAvalicao: number,
+        avaliadorId: number,
+        candidatoId: number,
+    ) {
+        try {
+            const avaliacao = await this.prisma.avaliacao.update({
+                where: { idAvalicao, candidatoId },
+                data: { avaliadorId },
+            });
+            return avaliacao;
+        } catch (error) {
+            throw new Error(`Erro ao editar avaliação teórica: ${error}`);
+        }
+    }
+
+    async editarAvaliacaoCompleta(
+        idAvalicao: number,
+        avaliadorId: number,
+        candidatoId: number,
+    ) { 
+        try {
+            const avaliacao = await this.prisma.avaliacao.update({
+                where: { idAvalicao, candidatoId },
+                data: { avaliadorId },
+            });
+            return avaliacao;
+        } catch (error) {
+            throw new Error(`Erro ao editar avaliação completa: ${error}`);
+        }
+    }
+    
 }
 
 type CriarAvaliacaoCompletaDTO = {
