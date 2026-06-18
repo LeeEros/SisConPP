@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "Funcao" ADD VALUE 'ADMINISTRADOR';

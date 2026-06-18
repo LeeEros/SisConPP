@@ -80,6 +80,7 @@ enum Funcao {
   SECRETARIO
   AVALIADOR
   AUXILIAR
+  ADMINISTRADOR
 }
 
 enum Credenciamento {

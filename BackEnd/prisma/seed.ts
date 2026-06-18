@@ -219,6 +219,22 @@ async function main() {
             numCredenciamento: 10,
         },
     });
+
+    const senhaHashAdm = await bcrypt.hash("12345", 10);
+    await prisma.usuario.create({
+        data: {
+            nomeCompleto: "Administrador",
+            cidade: "União da Vitória",
+            estado: "PR",
+            CTGId: ctg.idCTG,
+            numCarteirinha: "0",
+            login: "admin",
+            senha: senhaHashAdm,
+            funcao: "ADMINISTRADOR",
+            credenciamento: "CREDENCIADO",
+            numCredenciamento: 0,
+        },
+    });
     console.log("🌱 Seed executado com sucesso!");
 }
 main()
