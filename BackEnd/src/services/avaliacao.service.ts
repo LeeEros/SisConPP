@@ -523,23 +523,150 @@ export class AvaliacaoService {
         }
     }
 
-    async editarAvaliacaoCompleta(
-        idAvalicao: number,
-        avaliadorId: number,
-        candidatoId: number,
-    ) { 
-        try {
-            const avaliacao = await this.prisma.avaliacao.update({
-                where: { idAvalicao, candidatoId },
-                data: { avaliadorId },
+    async editarAvaliacaoCompleta(data: EditarAvaliacaoCompletaDTO) {
+        const {
+            idAvalicao,
+            comissaoId,
+            avaliadorId,
+            candidatoId,
+            blocoProvaId,
+            provaPraticaId,
+            quesitos,
+            ficha,
+        } = data;
+
+        if (
+            !idAvalicao ||
+            !comissaoId ||
+            !avaliadorId ||
+            !candidatoId ||
+            !blocoProvaId ||
+            !provaPraticaId ||
+            !Array.isArray(quesitos) ||
+            !ficha
+        ) {
+            throw new Error("Dados obrigatórios não informados");
+        }
+
+        return this.prisma.$transaction(async (prisma) => {
+            const avaliacaoExistente = await prisma.avaliacao.findUnique({
+                where: { idAvalicao },
             });
-            return avaliacao;
+
+            if (
+                !avaliacaoExistente ||
+                avaliacaoExistente.avaliadorId !== avaliadorId ||
+                avaliacaoExistente.candidatoId !== candidatoId
+            ) {
+                throw new Error("Avaliação prática não encontrada para esse candidato/avaliador.");
+            }
+
+            const notaFinalAntiga = avaliacaoExistente.notaFinal ?? 0;
+
+            for (const quesito of quesitos) {
+                const avaliacaoQuesito = await prisma.avaliacaoQuesito.upsert({
+                    where: {
+                        avaliacaoId_quesitoId: {
+                            avaliacaoId: idAvalicao,
+                            quesitoId: quesito.quesitoId,
+                        },
+                    },
+                    create: {
+                        avaliacaoId: idAvalicao,
+                        quesitoId: quesito.quesitoId,
+                        comentario: quesito.comentario ?? null,
+                        notaQuesito: 0,
+                    },
+                    update: {
+                        comentario: quesito.comentario ?? null,
+                        notaQuesito: 0,
+                    },
+                });
+
+                let notaQuesito = 0;
+
+                for (const sub of quesito.subQuesitos) {
+                    notaQuesito += sub.notaSubQuesito;
+
+                    await prisma.avaliacaoSubQuesito.upsert({
+                        where: {
+                            avaliacaoQuesitoId_subQuesitoId: {
+                                avaliacaoQuesitoId: avaliacaoQuesito.idAvaliacaoQuesito,
+                                subQuesitoId: sub.subQuesitoId,
+                            },
+                        },
+                        create: {
+                            avaliacaoQuesitoId: avaliacaoQuesito.idAvaliacaoQuesito,
+                            subQuesitoId: sub.subQuesitoId,
+                            notaSubQuesito: sub.notaSubQuesito,
+                        },
+                        update: {
+                            notaSubQuesito: sub.notaSubQuesito,
+                        },
+                    });
+                }
+
+                await prisma.avaliacaoQuesito.update({
+                    where: { idAvaliacaoQuesito: avaliacaoQuesito.idAvaliacaoQuesito },
+                    data: { notaQuesito },
+                });
+            }
+
+            const somaQuesitos = await prisma.avaliacaoQuesito.aggregate({
+                where: { avaliacaoId: idAvalicao },
+                _sum: { notaQuesito: true },
+            });
+
+            const notaFinalProvaPratica = somaQuesitos._sum.notaQuesito ?? 0;
+
+            await prisma.avaliacao.update({
+                where: { idAvalicao },
+                data: { notaFinal: notaFinalProvaPratica },
+            });
+
+            const diferenca = notaFinalProvaPratica - notaFinalAntiga;
+
+            await prisma.fichaCandidato.update({
+                where: { idFicha: ficha.idFicha },
+                data: {
+                    notaFinalProvasPraticas: notaFinalProvaPratica,
+                    notaCandidato: { increment: diferenca },
+                },
+            });
+
+            return {
+                message: "Avaliação prática atualizada com sucesso",
+                notaFinalProvaPratica,
+            };
+        });
+    }
+
+    async listarAvaliacoesCompletasPorCandidatoAvaliador(candidatoId: number, avaliadorId: number) {
+        try {
+            const avaliacoes = await this.prisma.avaliacao.findMany({
+                where: {
+                    candidatoId,
+                    avaliadorId,
+                    provaPraticaId: { not: null },
+                },
+                include: {
+                    quesitosAvaliados: {
+                        include: {
+                            subQuesitosAvaliados: true,
+                        },
+                    },
+                },
+            });
+            return avaliacoes;
         } catch (error) {
-            throw new Error(`Erro ao editar avaliação completa: ${error}`);
+            throw new Error(`Erro ao listar avaliações completas por candidato e avaliador: ${error}`);
         }
     }
-    
 }
+
+type EditarAvaliacaoCompletaDTO = CriarAvaliacaoCompletaDTO & {
+    idAvalicao: number;
+};
 
 type CriarAvaliacaoCompletaDTO = {
     comissaoId: number

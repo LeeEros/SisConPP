@@ -25,7 +25,16 @@ router.get( "/avaliacao/:avaliadorId/:candidatoId", authMiddleware, permitirFunc
     await avaliacaoController.buscarEstruturaCompleta(req, res);
 });
 
-router.get( "/avaliacaoTeorica/:candidatoId", authMiddleware, permitirFuncoes(["ADMINISTRADOR", "SECRETARIO", "AVALIADOR"]), async (req: Request, res: Response) => {
+router.get("/avaliacaoCompleta/:candidatoId/:avaliadorId", async (req: Request, res: Response) => {
+    await avaliacaoController.listarAvaliacoesCompletasPorCandidatoAvaliador(req, res);
+    console.log("Rota de avaliação completa chamada");
+});
+
+router.put("/avaliacaoCompleta/:idAvalicao", async (req: Request, res: Response) => {
+    await avaliacaoController.editarAvaliacaoCompleta(req, res);
+});
+
+router.get( "/avaliacaoTeorica/:candidatoId", async (req: Request, res: Response) => {
     await avaliacaoController.buscarEstruturaTeorica(req, res);
 });
 

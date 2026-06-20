@@ -122,6 +122,50 @@ class AvaliacaoController {
         }
     }
 
+    async listarAvaliacoesCompletasPorCandidatoAvaliador(req: Request, res: Response) {
+        const { candidatoId, avaliadorId } = req.params;
+
+        if (!candidatoId || !avaliadorId) {
+            return res.status(400).json({ mensagem: "Id do Candidato e Id do Avaliador são obrigatórios." });
+        }
+
+        try {
+            const avaliacoes = await AvaliacaoService.listarAvaliacoesCompletasPorCandidatoAvaliador(
+                Number(candidatoId),
+                Number(avaliadorId)
+            );
+            return res.status(200).json(avaliacoes);
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                console.error("Erro ao listar avaliações completas:", error);
+                return res.status(400).json({ mensagem: error.message });
+            }
+            return res.status(500).json({ mensagem: "Erro desconhecido." });
+        }
+    }
+
+    async editarAvaliacaoCompleta(req: Request, res: Response) {
+        const { idAvalicao } = req.params;
+
+        if (!idAvalicao) {
+            return res.status(400).json({ mensagem: "Id da Avaliação é obrigatório." });
+        }
+
+        try {
+            const avaliacao = await AvaliacaoService.editarAvaliacaoCompleta({
+                idAvalicao: Number(idAvalicao),
+                ...req.body,
+            });
+            return res.status(200).json(avaliacao);
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                console.error("Erro ao editar avaliação completa:", error);
+                return res.status(400).json({ mensagem: error.message });
+            }
+            return res.status(500).json({ mensagem: "Erro desconhecido." });
+        }
+    }
+
     async criarAvaliacaoTeorica(req: Request, res: Response) {
         try {
             const { candidatoId, avaliadorId, provaTeoricaId, quesitos, ficha } = req.body;
