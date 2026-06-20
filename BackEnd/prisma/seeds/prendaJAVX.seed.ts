@@ -354,7 +354,7 @@ export async function seedPrendas(prisma: PrismaClient) {
       },
       {
         nomeSubquesito: "Execução dos passos característicos/domínio da sala",
-        notaSubequesito: 1.5,
+        notaSubequesito: 1.0,
         quesitoId: dancaSalao.idQuesito,
       },
       {
