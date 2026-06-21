@@ -1,5 +1,4 @@
 import { useEffect, useState, useRef } from "react";
-import RelatorioGeralList from "../components/Lists/RelatorioGeralList";
 import RankingCategoriaList from "../components/Lists/RankingCategoriaList";
 import SideNavBar from "../components/SideNavBar/SideNavBar";
 import ReportHeader from "../components/PDFModelo/timbradoSisConPP";
@@ -12,17 +11,15 @@ import { Candidato } from "../types/Candidato";
 import { toast } from "react-toastify";
 import { FileText, Trophy, Printer, User, Filter, FileBarChart2, LayoutList } from "lucide-react";
 
-type TabOption = 'GERAL' | 'RANKING' | 'INDIVIDUAL' | 'DETALHADO';
+type TabOption =  'RANKING' | 'INDIVIDUAL' | 'DETALHADO';
 
 export default function Relatorios() {
 
     const [concursos, setConcursos] = useState<Concurso[]>([]);
     const [categorias, setCategorias] = useState<Categoria[]>([]);
     const [candidatos, setCandidatos] = useState<Candidato[]>([]);
-    const [activeTab, setActiveTab] = useState<TabOption>('GERAL');
+    const [activeTab, setActiveTab] = useState<TabOption>('RANKING');
 
-    const [concursoGeralId, setConcursoGeralId] = useState<number | null>(null);
-    
     const [concursoRankingId, setConcursoRankingId] = useState<number | null>(null);
     const [categoriaRankingId, setCategoriaRankingId] = useState<number | null>(null);
     
@@ -75,16 +72,6 @@ export default function Relatorios() {
 
     const renderFilters = () => {
         switch (activeTab) {
-            case 'GERAL':
-                return (
-                    <div className="w-full md:w-1/2">
-                        <label className={labelClass}>Selecione o Concurso</label>
-                        <select className={selectClass} value={concursoGeralId ?? ""} onChange={(e) => setConcursoGeralId(Number(e.target.value) || null)}>
-                            <option value="">Selecione...</option>
-                            {concursos.map(c => <option key={c.idConcurso} value={c.idConcurso}>{c.nomeConcurso}</option>)}
-                        </select>
-                    </div>
-                );
             case 'RANKING':
                 return (
                     <div className="grid md:grid-cols-2 gap-4 w-full">
@@ -166,12 +153,7 @@ export default function Relatorios() {
         let subtitle = "";
         let ContentComponent = null;
 
-        if (activeTab === 'GERAL' && concursoGeralId) {
-            showContent = true;
-            title = "Relatório Geral";
-            subtitle = getNomeConcurso(concursoGeralId);
-            ContentComponent = <RelatorioGeralList concursoId={concursoGeralId} />;
-        } else if (activeTab === 'RANKING' && concursoRankingId && categoriaRankingId) {
+        if (activeTab === 'RANKING' && concursoRankingId && categoriaRankingId) {
             showContent = true;
             title = "Resultado por Categoria Oficial";
             subtitle = `${getNomeConcurso(concursoRankingId)} - ${getNomeCategoria(categoriaRankingId)}`;
@@ -245,9 +227,6 @@ export default function Relatorios() {
 
                         {/* TAB NAVIGATION */}
                         <div className="flex gap-1 mt-8 overflow-x-auto">
-                            <button onClick={() => setActiveTab('GERAL')} className={tabClass(activeTab === 'GERAL')}>
-                                <FileText size={18} /> Geral
-                            </button>
                             <button onClick={() => setActiveTab('RANKING')} className={tabClass(activeTab === 'RANKING')}>
                                 <Trophy size={18} /> Ranking
                             </button>
