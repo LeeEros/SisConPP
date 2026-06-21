@@ -11,34 +11,9 @@ import {
   TrendingUp,
   CalendarDays
 } from 'lucide-react';
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Cell
-} from 'recharts';
 import SideNavBar from '../components/SideNavBar/SideNavBar';
 import { listarCandidatos, listarConcurso, listarAvaliacoes } from '../services/api';
 
-const CHART_COLORS = {
-  primary: '#3A6A00',
-  primaryLight: '#9ED768',
-  secondary: '#E24E6E',
-  tertiary: '#F294B3',
-  fixed: '#B9F381'
-};
-
-const dadosGrafico = [
-  { name: 'Prenda Mirim', progresso: 85, color: CHART_COLORS.primary },
-  { name: 'Peão Juvenil', progresso: 60, color: CHART_COLORS.secondary },
-  { name: 'Prenda Juvenil', progresso: 45, color: CHART_COLORS.primaryLight },
-  { name: 'Peão Adulto', progresso: 30, color: CHART_COLORS.tertiary },
-  { name: 'Xirú', progresso: 90, color: CHART_COLORS.fixed },
-];
 
 function Dashboard() {
   const usuarioLogado = JSON.parse(localStorage.getItem("usuario") || "null");
@@ -137,7 +112,7 @@ function Dashboard() {
         </div>
 
         {/* 3. Área Principal: Ações e Gráfico */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
           {/* Coluna Esquerda: Ações Rápidas */}
           <div className="lg:col-span-2 space-y-6">
@@ -195,7 +170,7 @@ function Dashboard() {
           </div>
 
           {/* Coluna Direita: Gráfico */}
-          <div className="bg-surface-containerLowest p-6 rounded-2xl shadow-sm border border-outline-variant flex flex-col">
+          {/* <div className="bg-surface-containerLowest p-6 rounded-2xl shadow-sm border border-outline-variant flex flex-col">
             <h2 className="text-xl font-bold text-neutral-onSurface mb-2">Progresso</h2>
             <p className="text-sm text-neutral-onVariant mb-6">Porcentagem avaliada por categoria</p>
 
@@ -230,7 +205,7 @@ function Dashboard() {
                 </BarChart>
               </ResponsiveContainer>
             </div>
-          </div>
+          </div> */}
 
         </div>
       </main>

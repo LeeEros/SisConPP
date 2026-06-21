@@ -9,7 +9,7 @@ import { Concurso } from "../types/Concurso";
 import { Categoria } from "../types/Categoria";
 import { Candidato } from "../types/Candidato";
 import { toast } from "react-toastify";
-import { FileText, Trophy, Printer, User, Filter, FileBarChart2, LayoutList } from "lucide-react";
+import { Trophy, Printer, User, Filter, FileBarChart2, LayoutList } from "lucide-react";
 
 type TabOption =  'RANKING' | 'INDIVIDUAL' | 'DETALHADO';
 
