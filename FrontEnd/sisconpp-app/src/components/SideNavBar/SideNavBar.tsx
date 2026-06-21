@@ -56,8 +56,11 @@ const Sidebar: FC = () => {
     { label: "Prova Teórica", icon: BookPlus, href: "/prova-teorica-criacao", roles: ["SECRETARIO", "ADMINISTRADOR"] },
     { label: "Avaliação Prática", icon: SquareMenu, href: "/avaliacao-pratica", roles: ["SECRETARIO", "AVALIADOR", "ADMINISTRADOR"] },
     { label: "Avaliação Teórica", icon: BookType, href: "/avaliacao-teorica", roles: ["SECRETARIO", "ADMINISTRADOR"] },
+    { label: "Editar Prova Prática", icon: BookText, href: "/editar-prova-pratica", roles: ["ADMINISTRADOR"] },
+    { label: "Editar Prova Teórica", icon: BookText, href: "/editar-prova-teorica", roles: ["ADMINISTRADOR"] },
     { label: "Relatórios", icon: BookText, href: "/relatorios", roles: ["SECRETARIO", "ADMINISTRADOR"] },
     { label: "Recursos", icon: Scale, href: "/recursos", roles: ["SECRETARIO", "ADMINISTRADOR"] },
+
   ];
 
   const filteredMenuItems = userRole

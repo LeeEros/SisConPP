@@ -347,6 +347,17 @@ export async function listarAvaliacoes() {
   return response.data;
 }
 
+export async function buscarAvaliaçãoCompletasPorCandidatoAvaliador(candidatoId: number, avaliadorId: number){
+  const response = await api.get(`/avaliacao/avaliacaoCompleta/${candidatoId}/${avaliadorId}`);
+  return response.data;
+}
+
+export async function atualizarAvaliacaoCompleta(idAvaliacao: number, payload: CriarAvaliacaoCompletaDTO) {
+  const { data } = await api.put(`/avaliacao/avaliacaoCompleta/${idAvaliacao}`, payload);
+  return data;
+}
+
+
 //---- Relatoriois ----
 export async function relatorioGeral(concursoId: number) {
   const response = await api.get<RelatorioGeralCandidatoDTO[]>(

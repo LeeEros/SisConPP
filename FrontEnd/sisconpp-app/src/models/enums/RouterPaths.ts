@@ -16,6 +16,8 @@ export enum RoutesPaths{
     AvaliacaoTeorica = "/avaliacao-teorica",
     Relatoriois = "/relatorios",
     Recursos = "/recursos",
+    EditarProvaPratica = "/editar-prova-pratica",
+    EditarProvaTeorica = "/editar-prova-teorica",
 }
 
 export default RoutesPaths;
