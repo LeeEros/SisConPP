@@ -357,6 +357,15 @@ export async function atualizarAvaliacaoCompleta(idAvaliacao: number, payload: C
   return data;
 }
 
+export async function atualizarAvaliacaoTeorica(idAvaliacao: number, payload: CriarAvaliacaoCompletaDTO) {
+  const { data } = await api.put(`/avaliacao/edicaoAvaliacaoTeorica/${idAvaliacao}`, payload);
+  return data;
+}
+
+export async function buscarAvaliacaoTeoricaSalva(candidatoId: number) {
+  const response = await api.get(`/avaliacao/avaliacaoTeoricaCandidato/${candidatoId}`);
+  return response.data;
+}
 
 //---- Relatoriois ----
 export async function relatorioGeral(concursoId: number) {

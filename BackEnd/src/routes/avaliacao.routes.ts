@@ -25,12 +25,12 @@ router.get( "/avaliacao/:avaliadorId/:candidatoId", authMiddleware, permitirFunc
     await avaliacaoController.buscarEstruturaCompleta(req, res);
 });
 
-router.get("/avaliacaoCompleta/:candidatoId/:avaliadorId", async (req: Request, res: Response) => {
+router.get("/avaliacaoCompleta/:candidatoId/:avaliadorId",authMiddleware, permitirFuncoes(["ADMINISTRADOR"]), async (req: Request, res: Response) => {
     await avaliacaoController.listarAvaliacoesCompletasPorCandidatoAvaliador(req, res);
     console.log("Rota de avaliação completa chamada");
 });
 
-router.put("/avaliacaoCompleta/:idAvalicao", async (req: Request, res: Response) => {
+router.put("/avaliacaoCompleta/:idAvalicao", authMiddleware, permitirFuncoes(["ADMINISTRADOR"]), async (req: Request, res: Response) => {
     await avaliacaoController.editarAvaliacaoCompleta(req, res);
 });
 
@@ -38,8 +38,17 @@ router.get( "/avaliacaoTeorica/:candidatoId", async (req: Request, res: Response
     await avaliacaoController.buscarEstruturaTeorica(req, res);
 });
 
+router.put("/edicaoAvaliacaoTeorica/:idAvalicao", async (req: Request, res: Response) => {
+    await avaliacaoController.editarAvaliacaoTeorica(req, res);
+});
+
+router.get("/avaliacaoTeoricaCandidato/:candidatoId", async (req: Request, res: Response) => {
+    await avaliacaoController.buscarAvaliacaoTeoricaCandidato(req, res);
+});
+
 router.get("/avaliacoes", authMiddleware, permitirFuncoes(["ADMINISTRADOR", "SECRETARIO", "AVALIADOR", "AUXILIAR"]), async (req: Request, res: Response) => {
     await avaliacaoController.listarAvaliacoes(req, res);
 });
+
 
 export default router;

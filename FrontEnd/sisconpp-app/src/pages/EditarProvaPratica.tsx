@@ -15,7 +15,7 @@ import {
     atualizarAvaliacaoCompleta
 } from "../services/api";
 import { toast } from "react-toastify";
-import EdicaoAvaliacaoAccordion from "../components/EdicaçãoProvaPratica/EdicaoAvaliacaoAccordion";
+import EdicaoAvaliacaoAccordion from "../components/EdiçãoProvaPratica/EdicaoAvaliacaoAccordion";
 import { ClipboardEdit, Filter, User, Users, ShieldAlert } from "lucide-react";
 
 export default function EdicaoAvaliacaoPage() {

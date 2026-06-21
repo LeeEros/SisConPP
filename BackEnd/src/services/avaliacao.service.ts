@@ -71,14 +71,6 @@ export class AvaliacaoService {
                     data: { notaFinal: notaFinalProvaPratica },
                 });
 
-                await prisma.fichaCandidato.update({
-                    where: { idFicha: data.ficha.idFicha },
-                    data: {
-                        notaFinalProvasPraticas: notaFinalProvaPratica,
-                        notaCandidato: { increment: notaFinalProvaPratica },
-                    },
-                });
-
                 return {
                     message: "Avaliação prática criada com sucesso",
                     notaFinalProvaPratica,
@@ -190,7 +182,7 @@ export class AvaliacaoService {
          * 📋 PROVAS / BLOCOS / QUESITOS
          * ======================================================
          */
-        
+
         // 1️⃣ Busca todas as atribuições que as comissões deste avaliador possuem
         const comissoesDoAvaliador = await this.prisma.comissaoUsuario.findMany({
             where: { usuarioId: avaliadorId },
@@ -225,7 +217,7 @@ export class AvaliacaoService {
         provaPratica = provaPratica
             .map(prova => {
                 // Tem acesso total se a atribuição for geral da Categoria OU geral desta Prova
-                const temAcessoTotalProva = atribuicoes.some(a => 
+                const temAcessoTotalProva = atribuicoes.some(a =>
                     (a.categoriaId === candidato.categoriaId && !a.provaPraticaId && !a.blocoProvaId) ||
                     (a.provaPraticaId === prova.idProvaPratica && !a.blocoProvaId)
                 );
@@ -234,8 +226,8 @@ export class AvaliacaoService {
                 const blocosFiltrados = prova.blocosProvas
                     .map(bloco => {
                         const temAcessoTotalBloco = temAcessoTotalProva || atribuicoes.some(a => a.blocoProvaId === bloco.idBloco);
-                        
-                        const quesitosFiltrados = bloco.quesitos.filter(quesito => 
+
+                        const quesitosFiltrados = bloco.quesitos.filter(quesito =>
                             temAcessoTotalBloco
                         );
 
@@ -507,21 +499,94 @@ export class AvaliacaoService {
         return provasTeoricas;
     }
 
-    async editarAvaliacaoTeorica(
-        idAvalicao: number,
-        avaliadorId: number,
-        candidatoId: number,
-    ) {
+    async editarAvaliacaoTeorica(idAvalicao: number, payload: any) {
         try {
             const avaliacao = await this.prisma.avaliacao.update({
-                where: { idAvalicao, candidatoId },
-                data: { avaliadorId },
+                where: { idAvalicao: idAvalicao },
+                data: { avaliadorId: payload.avaliadorId },
             });
+
+            let somaTotal = 0; 
+
+            if (payload.quesitos && payload.quesitos.length > 0) {
+                for (const quesito of payload.quesitos) {
+                    const novaNotaQuesito = quesito.subQuesitos.reduce((acc: number, sub: any) => {
+                        return acc + (Number(sub.notaSubQuesito) || 0);
+                    }, 0);
+
+                    somaTotal += novaNotaQuesito;
+
+                    await this.prisma.avaliacaoQuesito.updateMany({
+                        where: { avaliacaoId: idAvalicao, quesitoId: quesito.quesitoId },
+                        data: { notaQuesito: novaNotaQuesito, comentario: quesito.comentario }
+                    });
+
+                    if (quesito.subQuesitos && quesito.subQuesitos.length > 0) {
+                        const avaliacaoQuesito = await this.prisma.avaliacaoQuesito.findFirst({
+                            where: { avaliacaoId: idAvalicao, quesitoId: quesito.quesitoId }
+                        });
+
+                        if (avaliacaoQuesito) {
+                            for (const sub of quesito.subQuesitos) {
+                                await this.prisma.avaliacaoSubQuesito.updateMany({
+                                    where: {
+                                        avaliacaoQuesitoId: avaliacaoQuesito.idAvaliacaoQuesito,
+                                        subQuesitoId: sub.subQuesitoId
+                                    },
+                                    data: { notaSubQuesito: Number(sub.notaSubQuesito) }
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 3. Atualiza a Ficha com o total calculado (somaTotal)
+            if (payload.ficha) {
+                console.log("Atualizando Ficha ID:", payload.ficha.idFicha, "com nota final calculada:", somaTotal);
+
+                const fichaAtualizada = await this.prisma.fichaCandidato.update({
+                    where: { idFicha: Number(payload.ficha.idFicha) },
+                    data: {
+                        notaFinalProvaTeorica: somaTotal, // Aqui usamos a soma real dos quesitos
+                        anexoGabarito: typeof payload.ficha.anexoGabarito === 'string' ? payload.ficha.anexoGabarito : "",
+                        anexoRedacao: typeof payload.ficha.anexoRedacao === 'string' ? payload.ficha.anexoRedacao : ""
+                    }
+                });
+
+                return { avaliacao, fichaAtualizada };
+            }
+
             return avaliacao;
+
         } catch (error) {
+            console.error("Erro no Service de Edição:", error);
             throw new Error(`Erro ao editar avaliação teórica: ${error}`);
         }
     }
+
+    async buscarAvaliacaoTeoricaCandidato(candidatoId: number) {
+        try {
+            const avaliacoes = await this.prisma.avaliacao.findMany({
+                where: {
+                    candidatoId: candidatoId,
+                    provaTeoricaId: { not: null },
+                },
+                include: {
+                    quesitosAvaliados: {
+                        include: {
+                            subQuesitosAvaliados: true,
+                        },
+                    },
+                },
+            });
+
+            return avaliacoes;
+        } catch (error) {
+            throw new Error(`Erro ao buscar avaliação teórica salva: ${error}`);
+        }
+    }
+
 
     async editarAvaliacaoCompleta(data: EditarAvaliacaoCompletaDTO) {
         const {

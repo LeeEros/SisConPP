@@ -102,7 +102,7 @@ class AvaliacaoController {
             return res.status(500).json({ mensagem: "Erro desconhecido." });
         }
     }
-    
+
     async buscarEstruturaCompleta(req: Request, res: Response) {
         const { avaliadorId, candidatoId } = req.params;
 
@@ -173,7 +173,7 @@ class AvaliacaoController {
             if (!candidatoId || !avaliadorId || !provaTeoricaId || !Array.isArray(quesitos) || !ficha) {
                 return res.status(400).json({ message: "Dados obrigatórios não informados" });
             }
-            
+
             const avaliacaoTeorica = await AvaliacaoService.criarAvaliacaoTeorica({
                 candidatoId,
                 avaliadorId,
@@ -206,6 +206,52 @@ class AvaliacaoController {
         }
     }
 
+    async editarAvaliacaoTeorica(req: Request, res: Response) {
+        const { idAvalicao } = req.params;
+        const payload = req.body;
+
+        if (!idAvalicao) {
+            return res.status(400).json({ mensagem: "Id da Avaliação é obrigatório na URL." });
+        }
+
+        if (!payload || !payload.avaliadorId || !payload.candidatoId) {
+            return res.status(400).json({ mensagem: "Os dados do candidato e avaliador são obrigatórios no corpo da requisição." });
+        }
+
+        try {
+            const avaliacao = await AvaliacaoService.editarAvaliacaoTeorica(
+                Number(idAvalicao),
+                payload
+            );
+
+            return res.status(200).json(avaliacao);
+
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                console.error("Erro ao editar avaliação teórica:", error);
+                return res.status(400).json({ mensagem: error.message });
+            }
+            return res.status(500).json({ mensagem: "Erro desconhecido." });
+        }
+    }
+
+    async buscarAvaliacaoTeoricaCandidato(req: Request, res: Response) {
+        const { candidatoId } = req.params;
+
+        try {
+            const avaliacoes = await AvaliacaoService.buscarAvaliacaoTeoricaCandidato(
+                Number(candidatoId)
+            );
+
+            return res.status(200).json(avaliacoes);
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                console.error("Erro ao buscar avaliações teóricas:", error);
+                return res.status(400).json({ mensagem: error.message });
+            }
+            return res.status(500).json({ mensagem: "Erro desconhecido." });
+        }
+    }
 }
 
 export default new AvaliacaoController();
