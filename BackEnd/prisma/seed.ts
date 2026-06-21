@@ -21,34 +21,50 @@ async function main() {
         ]
     });
 
-    await prisma.quesitos.createMany({
-        data:[
-            { nomeQuesito: "Questões corretas",
-                notaMaximaQuesito: 100,
-                opcional: false,
-                provaTeoricaIdprovaTeorica: 1,
-            }
+    const ProvaPrendaM = await prisma.quesitos.create({
+        data: {
+            nomeQuesito: "Questões corretas",
+            notaMaximaQuesito: 100,
+            opcional: false,
+            provaTeoricaIdprovaTeorica: 1,
+        }
+
+    });
+
+    await prisma.subQuesitos.createMany({
+        data: [
+            { nomeSubquesito: "Questões corretas", notaSubequesito: 100, quesitoId: ProvaPrendaM.idQuesito },
         ]
     });
 
-    await prisma.quesitos.createMany({
-        data:[
-            { nomeQuesito: "Questões corretas",
-                notaMaximaQuesito: 100,
-                opcional: false,
-                provaTeoricaIdprovaTeorica: 2,
-            }
+    const ProvaPeaoM = await prisma.quesitos.create({
+        data:
+        {
+            nomeQuesito: "Questões corretas",
+            notaMaximaQuesito: 100,
+            opcional: false,
+            provaTeoricaIdprovaTeorica: 2,
+        }
+    });
+
+    await prisma.subQuesitos.createMany({
+        data: [
+            { nomeSubquesito: "Questões corretas", notaSubequesito: 100, quesitoId: ProvaPeaoM.idQuesito },
         ]
     });
 
-    await prisma.quesitos.createMany({
-        data:[
-            { nomeQuesito: "Questões corretas",
+    const ProvaPrendaJAVX = await prisma.quesitos.create({
+        data: 
+            {
+                nomeQuesito: "Questões corretas",
                 notaMaximaQuesito: 75.0,
                 opcional: false,
                 provaTeoricaIdprovaTeorica: 3,
             }
-        ]
+    });
+
+    await prisma.subQuesitos.create({
+        data: { nomeSubquesito: "Questões corretas", notaSubequesito: 75.0, quesitoId: ProvaPrendaJAVX.idQuesito },
     });
 
     const redacaoPrenda = await prisma.quesitos.create({
@@ -62,22 +78,29 @@ async function main() {
 
     await prisma.subQuesitos.createMany({
         data: [
-            { nomeSubquesito: "Estrutura do texto (argumentativo)", notaSubequesito: 5.0, quesitoId: redacaoPrenda.idQuesito},
-            {nomeSubquesito: "Ortografia", notaSubequesito: 5.0,quesitoId: redacaoPrenda.idQuesito,}, 
-            { nomeSubquesito: "Concordância verbal", notaSubequesito: 5.0, quesitoId: redacaoPrenda.idQuesito},
-            { nomeSubquesito: "Conteúdo (pertinente ao tema)", notaSubequesito: 10.0, quesitoId: redacaoPrenda.idQuesito,}
+            { nomeSubquesito: "Estrutura do texto (argumentativo)", notaSubequesito: 5.0, quesitoId: redacaoPrenda.idQuesito },
+            { nomeSubquesito: "Ortografia", notaSubequesito: 5.0, quesitoId: redacaoPrenda.idQuesito, },
+            { nomeSubquesito: "Concordância verbal", notaSubequesito: 5.0, quesitoId: redacaoPrenda.idQuesito },
+            { nomeSubquesito: "Conteúdo (pertinente ao tema)", notaSubequesito: 10.0, quesitoId: redacaoPrenda.idQuesito, }
         ]
-    });      
-    
-    await prisma.quesitos.createMany({
-        data:[
-            { nomeQuesito: "Questões corretas",
+    });
+
+    const ProvaPeaoJAVX = await prisma.quesitos.create({
+        data: 
+            {
+                nomeQuesito: "Questões corretas",
                 notaMaximaQuesito: 75.0,
                 opcional: false,
                 provaTeoricaIdprovaTeorica: 4,
             }
+    });
+
+    await prisma.subQuesitos.createMany({
+        data: [
+            { nomeSubquesito: "Questões corretas", notaSubequesito: 75.0, quesitoId: ProvaPeaoJAVX.idQuesito },
         ]
     });
+
 
     const redacaoPeao = await prisma.quesitos.create({
         data: {
@@ -90,12 +113,12 @@ async function main() {
 
     await prisma.subQuesitos.createMany({
         data: [
-            { nomeSubquesito: "Estrutura do texto (argumentativo)", notaSubequesito: 5.0, quesitoId: redacaoPeao.idQuesito},
-            {nomeSubquesito: "Ortografia", notaSubequesito: 5.0,quesitoId: redacaoPeao.idQuesito,}, 
-            { nomeSubquesito: "Concordância verbal", notaSubequesito: 5.0, quesitoId: redacaoPeao.idQuesito},
-            { nomeSubquesito: "Conteúdo (pertinente ao tema)", notaSubequesito: 10.0, quesitoId: redacaoPeao.idQuesito,}
+            { nomeSubquesito: "Estrutura do texto (argumentativo)", notaSubequesito: 5.0, quesitoId: redacaoPeao.idQuesito },
+            { nomeSubquesito: "Ortografia", notaSubequesito: 5.0, quesitoId: redacaoPeao.idQuesito, },
+            { nomeSubquesito: "Concordância verbal", notaSubequesito: 5.0, quesitoId: redacaoPeao.idQuesito },
+            { nomeSubquesito: "Conteúdo (pertinente ao tema)", notaSubequesito: 10.0, quesitoId: redacaoPeao.idQuesito, }
         ]
-    });     
+    });
 
     console.log("✅ Provas Teóricas criados com sucesso!");
 

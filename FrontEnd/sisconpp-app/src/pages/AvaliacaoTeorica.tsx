@@ -112,7 +112,13 @@ export default function AvaliacaoTeoricaPage() {
                 toast.error("Candidato ou ficha não carregados");
                 return;
             }
-            
+
+            const notaFinalProva = Number(ficha.notaFinalProvaTeorica ?? 0);
+            if (notaFinalProva > 0) {
+                toast.error("Já existe uma avaliação salva para esta prova. Não é possível criar outra.");
+                return;
+            }
+
             for (const prova of provasSelecionadas) {
                 const payload = {
                     candidatoId: Number(candidatoSelecionado),
@@ -135,11 +141,10 @@ export default function AvaliacaoTeoricaPage() {
                         anexoRedacao: ficha.anexoRedacao ?? "",
                     },
                 };
-
                 await criarAvaliacaoTeorica(payload);
-                resetPagina();
             }
 
+            resetPagina();
             toast.success("Avaliação teórica salva com sucesso!");
         } catch (error) {
             console.error(error);
@@ -148,15 +153,16 @@ export default function AvaliacaoTeoricaPage() {
     };
 
 
+
     return (
         <div className="flex min-h-screen w-full bg-neutral-background">
             <SideNavBar />
 
             <main className="flex-1 p-6 md:p-8 flex flex-col overflow-y-auto">
-                
+
                 {/* CARD UNIFICADO */}
                 <div className="w-full bg-surface-containerLowest rounded-2xl shadow-sm border border-outline-variant flex flex-col min-h-[600px]">
-                    
+
                     {/* CABEÇALHO */}
                     <div className="p-6 border-b border-outline-variant">
                         <div className="flex items-center gap-3">
@@ -174,15 +180,15 @@ export default function AvaliacaoTeoricaPage() {
 
                     {/* CONTEÚDO PRINCIPAL */}
                     <div className="p-6 md:p-8 flex-1 flex flex-col">
-                        
+
                         {/* FILTROS */}
                         <div className="grid md:grid-cols-2 gap-6 mb-8">
-                            
+
                             {/* Categoria */}
                             <div>
                                 <label className={labelClass}>
                                     <span className="flex items-center gap-2">
-                                        <Filter size={16} className="text-primary"/> Categoria
+                                        <Filter size={16} className="text-primary" /> Categoria
                                     </span>
                                 </label>
                                 <select
@@ -203,7 +209,7 @@ export default function AvaliacaoTeoricaPage() {
                             <div>
                                 <label className={labelClass}>
                                     <span className="flex items-center gap-2">
-                                        <User size={16} className="text-primary"/> Candidato
+                                        <User size={16} className="text-primary" /> Candidato
                                     </span>
                                 </label>
                                 <select

@@ -70,6 +70,7 @@ export default function QuesitoCard({
                             {quesito.subQuesitos.map((sub) => (
                                 <SubQuesitoInput
                                     key={sub.idSubequestios}
+                                    
                                     subQuesito={sub}
                                     value={notas[sub.idSubequestios] ?? ""}
                                     onChange={onChangeNota}
