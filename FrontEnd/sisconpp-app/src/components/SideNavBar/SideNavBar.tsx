@@ -94,7 +94,7 @@ const Sidebar: FC = () => {
         )}
       </div>
 
-      <div className="w-full h-px bg-primary/30 mb-2 mx-auto w-[90%]" />
+      <div className="w-full h-px bg-primary/30 mb-2 mx-auto]" />
 
       <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1 
   [&::-webkit-scrollbar]:w-1.5  [&::-webkit-scrollbar-track]:bg-transparent   [&::-webkit-scrollbar-thumb]:bg-primary/30
