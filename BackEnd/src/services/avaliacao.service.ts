@@ -71,6 +71,8 @@ export class AvaliacaoService {
                     data: { notaFinal: notaFinalProvaPratica },
                 });
 
+                await this.consolidarNotasCandidato(prisma, data.candidatoId, data.ficha.idFicha);
+
                 return {
                     message: "Avaliação prática criada com sucesso",
                     notaFinalProvaPratica,
@@ -451,19 +453,7 @@ export class AvaliacaoService {
                 data: { notaFinal: notaFinalProvaTeorica },
             });
 
-            await prisma.fichaCandidato.update({
-                where: { idFicha: data.ficha.idFicha },
-                data: {
-                    notaFinalProvaTeorica: notaFinalProvaTeorica,
-                    notaCandidato: { increment: notaFinalProvaTeorica },
-                    anexoGabarito: data.ficha.anexoGabarito
-                        ? new Uint8Array(data.ficha.anexoGabarito)
-                        : undefined,
-                    anexoRedacao: data.ficha.anexoRedacao
-                        ? new Uint8Array(data.ficha.anexoRedacao)
-                        : undefined,
-                },
-            });
+            await this.consolidarNotasCandidato(prisma, data.candidatoId, data.ficha.idFicha);
 
             return {
                 message: "Avaliação teórica criada com sucesso",
@@ -499,17 +489,17 @@ export class AvaliacaoService {
         return provasTeoricas;
     }
 
-    async editarAvaliacaoTeorica(idAvalicao: number, payload: any) {
+    async editarAvaliacaoTeorica(idAvalicao: number, data: any) {
         try {
             const avaliacao = await this.prisma.avaliacao.update({
                 where: { idAvalicao: idAvalicao },
-                data: { avaliadorId: payload.avaliadorId },
+                data: { avaliadorId: data.avaliadorId },
             });
 
-            let somaTotal = 0; 
+            let somaTotal = 0;
 
-            if (payload.quesitos && payload.quesitos.length > 0) {
-                for (const quesito of payload.quesitos) {
+            if (data.quesitos && data.quesitos.length > 0) {
+                for (const quesito of data.quesitos) {
                     const novaNotaQuesito = quesito.subQuesitos.reduce((acc: number, sub: any) => {
                         return acc + (Number(sub.notaSubQuesito) || 0);
                     }, 0);
@@ -521,43 +511,28 @@ export class AvaliacaoService {
                         data: { notaQuesito: novaNotaQuesito, comentario: quesito.comentario }
                     });
 
-                    if (quesito.subQuesitos && quesito.subQuesitos.length > 0) {
-                        const avaliacaoQuesito = await this.prisma.avaliacaoQuesito.findFirst({
-                            where: { avaliacaoId: idAvalicao, quesitoId: quesito.quesitoId }
-                        });
-
-                        if (avaliacaoQuesito) {
-                            for (const sub of quesito.subQuesitos) {
-                                await this.prisma.avaliacaoSubQuesito.updateMany({
-                                    where: {
-                                        avaliacaoQuesitoId: avaliacaoQuesito.idAvaliacaoQuesito,
-                                        subQuesitoId: sub.subQuesitoId
-                                    },
-                                    data: { notaSubQuesito: Number(sub.notaSubQuesito) }
-                                });
+                    for (const sub of quesito.subQuesitos) {
+                        await this.prisma.avaliacaoSubQuesito.updateMany({
+                            where: {
+                                avaliacaoQuesitoId: quesito.idAvaliacaoQuesito,
+                                subQuesitoId: sub.subQuesitoId
+                            },
+                            data: {
+                                notaSubQuesito: Number(sub.notaSubQuesito)
                             }
-                        }
+                        });
                     }
                 }
             }
 
-            // 3. Atualiza a Ficha com o total calculado (somaTotal)
-            if (payload.ficha) {
-                console.log("Atualizando Ficha ID:", payload.ficha.idFicha, "com nota final calculada:", somaTotal);
+            await this.prisma.avaliacao.update({
+                where: { idAvalicao: idAvalicao },
+                data: { notaFinal: somaTotal }
+            });
 
-                const fichaAtualizada = await this.prisma.fichaCandidato.update({
-                    where: { idFicha: Number(payload.ficha.idFicha) },
-                    data: {
-                        notaFinalProvaTeorica: somaTotal, // Aqui usamos a soma real dos quesitos
-                        anexoGabarito: typeof payload.ficha.anexoGabarito === 'string' ? payload.ficha.anexoGabarito : "",
-                        anexoRedacao: typeof payload.ficha.anexoRedacao === 'string' ? payload.ficha.anexoRedacao : ""
-                    }
-                });
+            await this.consolidarNotasCandidato(this.prisma, data.candidatoId, data.ficha.idFicha);
 
-                return { avaliacao, fichaAtualizada };
-            }
-
-            return avaliacao;
+            return { message: "Avaliação atualizada com sucesso", notaFinal: somaTotal };
 
         } catch (error) {
             console.error("Erro no Service de Edição:", error);
@@ -586,7 +561,6 @@ export class AvaliacaoService {
             throw new Error(`Erro ao buscar avaliação teórica salva: ${error}`);
         }
     }
-
 
     async editarAvaliacaoCompleta(data: EditarAvaliacaoCompletaDTO) {
         const {
@@ -626,8 +600,7 @@ export class AvaliacaoService {
                 throw new Error("Avaliação prática não encontrada para esse candidato/avaliador.");
             }
 
-            const notaFinalAntiga = avaliacaoExistente.notaFinal ?? 0;
-
+            // Loop para atualizar quesitos e subquesitos
             for (const quesito of quesitos) {
                 const avaliacaoQuesito = await prisma.avaliacaoQuesito.upsert({
                     where: {
@@ -677,6 +650,7 @@ export class AvaliacaoService {
                 });
             }
 
+            // Calcula a nota total apenas desta avaliação
             const somaQuesitos = await prisma.avaliacaoQuesito.aggregate({
                 where: { avaliacaoId: idAvalicao },
                 _sum: { notaQuesito: true },
@@ -684,20 +658,15 @@ export class AvaliacaoService {
 
             const notaFinalProvaPratica = somaQuesitos._sum.notaQuesito ?? 0;
 
+            // 1. Atualiza a nota final na tabela Avaliacao
             await prisma.avaliacao.update({
                 where: { idAvalicao },
                 data: { notaFinal: notaFinalProvaPratica },
             });
 
-            const diferenca = notaFinalProvaPratica - notaFinalAntiga;
-
-            await prisma.fichaCandidato.update({
-                where: { idFicha: ficha.idFicha },
-                data: {
-                    notaFinalProvasPraticas: notaFinalProvaPratica,
-                    notaCandidato: { increment: diferenca },
-                },
-            });
+            // 2. Chama a consolidação para recalcular e salvar na Ficha
+            // Passando o 'prisma' da transação para garantir que leia os dados atualizados
+            await this.consolidarNotasCandidato(prisma, candidatoId, ficha.idFicha);
 
             return {
                 message: "Avaliação prática atualizada com sucesso",
@@ -726,6 +695,30 @@ export class AvaliacaoService {
         } catch (error) {
             throw new Error(`Erro ao listar avaliações completas por candidato e avaliador: ${error}`);
         }
+    }
+
+    private async consolidarNotasCandidato(prisma: any, candidatoId: number, idFicha: number) {
+        const totalPraticas = await prisma.avaliacao.aggregate({
+            where: { candidatoId, provaPraticaId: { not: null } },
+            _sum: { notaFinal: true }
+        });
+
+        const totalTeoricas = await prisma.avaliacao.aggregate({
+            where: { candidatoId, provaTeoricaId: { not: null } },
+            _sum: { notaFinal: true }
+        });
+
+        const somaPratica = totalPraticas._sum.notaFinal ?? 0;
+        const somaTeorica = totalTeoricas._sum.notaFinal ?? 0;
+
+        await prisma.fichaCandidato.update({
+            where: { idFicha },
+            data: {
+                notaFinalProvasPraticas: somaPratica,
+                notaFinalProvaTeorica: somaTeorica,
+                notaCandidato: somaPratica + somaTeorica
+            }
+        });
     }
 }
 
