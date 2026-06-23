@@ -17,15 +17,15 @@ function getLimiteOpcionais(categoriaId: number | null | undefined, tipoProva: s
   if (!categoriaId) return 3;
 
   if (categoriaId === 2) {
-    if(tipoProva === "Prova Artística" || tipoProva === "Artistica"){
+    if (tipoProva === "Prova Artística" || tipoProva === "Artistica") {
       return 2
-    }else if(tipoProva === "Prova Campeira" || tipoProva === "Campeira"){
+    } else if (tipoProva === "Prova Campeira" || tipoProva === "Campeira") {
       return 3
     }
   }
 
   if ([1, 3, 5, 7, 9].includes(categoriaId)) {
-    return 3; 
+    return 3;
   }
 
   if ([4, 6, 8, 10].includes(categoriaId)) {
@@ -48,9 +48,35 @@ export default function BlocoAccordion({
 
   const limiteOpcionais = getLimiteOpcionais(categoriaSelecionada, bloco.nomeBloco);
 
+  // const handleToggleQuesito = (id: number) => {
+  //   if (selecionados.includes(id)) {
+  //     setSelecionados(selecionados.filter((q) => q !== id));
+  //   } else {
+  //     if (selecionados.length < limiteOpcionais) {
+  //       setSelecionados([...selecionados, id]);
+  //     } else {
+  //       toast.warn(`Você só pode selecionar até ${limiteOpcionais} quesitos opcionais neste bloco.`);
+  //     }
+  //   }
+  // };
+
   const handleToggleQuesito = (id: number) => {
     if (selecionados.includes(id)) {
       setSelecionados(selecionados.filter((q) => q !== id));
+
+      const quesitoDesmarcado = bloco.quesitos.find((q) => q.idQuesito === id);
+
+      if (quesitoDesmarcado) {
+        // Usamos o 'any' aqui apenas para ignorar o erro do TypeScript
+        quesitoDesmarcado.subQuesitos?.forEach((subQuesito: { idSubequestios: number }) => {
+          // CORREÇÃO AQUI: Usando idSubequestios igual vem do seu backend!
+          onChangeNota(subQuesito.idSubequestios, 0);
+        });
+
+        if (onChangeComentario) {
+          onChangeComentario(id, "");
+        }
+      }
     } else {
       if (selecionados.length < limiteOpcionais) {
         setSelecionados([...selecionados, id]);
@@ -86,61 +112,61 @@ export default function BlocoAccordion({
       </div>
 
       <div className={`p-4 bg-gray-50 space-y-4 ${open ? "block" : "hidden"}`}>
-          {bloco.quesitos.length === 0 && (
-            <p className="text-sm text-gray-400 italic">Nenhum quesito cadastrado.</p>
-          )}
+        {bloco.quesitos.length === 0 && (
+          <p className="text-sm text-gray-400 italic">Nenhum quesito cadastrado.</p>
+        )}
 
-          {/* Quesitos obrigatórios */}
-          {bloco.quesitos
-            .filter((q: QuesitoDTO) => !q.opcional)
-            .map((quesito) => (
-              <QuesitoCard
-                key={quesito.idQuesito}
-                quesito={quesito}
-                notas={notas}
-                comentarios={comentarios}
-                onChangeNota={onChangeNota}
-                onChangeComentario={onChangeComentario}
-              />
-            ))}
+        {/* Quesitos obrigatórios */}
+        {bloco.quesitos
+          .filter((q: QuesitoDTO) => !q.opcional)
+          .map((quesito) => (
+            <QuesitoCard
+              key={quesito.idQuesito}
+              quesito={quesito}
+              notas={notas}
+              comentarios={comentarios}
+              onChangeNota={onChangeNota}
+              onChangeComentario={onChangeComentario}
+            />
+          ))}
 
-          {bloco.quesitos.some((q) => q.opcional) && (
-            <div className="border rounded-lg bg-gray-50 p-4">
-              <p className="text-sm font-semibold text-gray-700 mb-2">
-                Quesitos opcionais (máx: {limiteOpcionais})
-              </p>
-              <div className="grid md:grid-cols-2 gap-1">
-                {bloco.quesitos
-                  .filter((q) => q.opcional)
-                  .map((q) => (
-                    <label key={q.idQuesito} className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        checked={selecionados.includes(q.idQuesito)}
-                        onChange={() => handleToggleQuesito(q.idQuesito)}
-                      />
-                      <span>{q.nomeQuesito}</span>
-                    </label>
-                  ))}
-              </div>
+        {bloco.quesitos.some((q) => q.opcional) && (
+          <div className="border rounded-lg bg-gray-50 p-4">
+            <p className="text-sm font-semibold text-gray-700 mb-2">
+              Quesitos opcionais (máx: {limiteOpcionais})
+            </p>
+            <div className="grid md:grid-cols-2 gap-1">
+              {bloco.quesitos
+                .filter((q) => q.opcional)
+                .map((q) => (
+                  <label key={q.idQuesito} className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      checked={selecionados.includes(q.idQuesito)}
+                      onChange={() => handleToggleQuesito(q.idQuesito)}
+                    />
+                    <span>{q.nomeQuesito}</span>
+                  </label>
+                ))}
             </div>
-          )}
+          </div>
+        )}
 
-          {/* Renderiza opcionais escolhidos */}
-          {selecionados.map((id) => {
-            const q = bloco.quesitos.find((q) => q.idQuesito === id);
-            if (!q) return null;
-            return (
-              <QuesitoCard
-                key={q.idQuesito}
-                quesito={q}
-                notas={notas}
-                comentarios={comentarios}
-                onChangeNota={onChangeNota}
-                onChangeComentario={onChangeComentario}
-              />
-            );
-          })}
+        {/* Renderiza opcionais escolhidos */}
+        {selecionados.map((id) => {
+          const q = bloco.quesitos.find((q) => q.idQuesito === id);
+          if (!q) return null;
+          return (
+            <QuesitoCard
+              key={q.idQuesito}
+              quesito={q}
+              notas={notas}
+              comentarios={comentarios}
+              onChangeNota={onChangeNota}
+              onChangeComentario={onChangeComentario}
+            />
+          );
+        })}
       </div>
     </div>
   );

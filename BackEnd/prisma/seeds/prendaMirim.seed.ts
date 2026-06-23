@@ -663,7 +663,7 @@ export async function seedPrendaMirim(prisma: PrismaClient) {
   const desenvolturaeExpressaoArt = await prisma.quesitos.create({
     data: {
       nomeQuesito: "Desenvoltura e Expressão",
-      notaMaximaQuesito: 2.0,
+      notaMaximaQuesito: 5.0,
       opcional: false,
       blocoProvaIdBloco: blocoArtistica.idBloco,
     },
@@ -678,17 +678,17 @@ export async function seedPrendaMirim(prisma: PrismaClient) {
       },
       {
         nomeSubquesito: "Fluência, naturalidade, domínio dos assuntos conversados",
-        notaSubequesito: 0.5,
+        notaSubequesito: 1.5,
         quesitoId: desenvolturaeExpressaoArt.idQuesito,
       },
       {
         nomeSubquesito: "Boa oratória, habilidades de comunicação",
-        notaSubequesito: 0.5,
+        notaSubequesito: 1.5,
         quesitoId: desenvolturaeExpressaoArt.idQuesito,
       },
       {
         nomeSubquesito: "Iniciativa e proatividade",
-        notaSubequesito: 0.5,
+        notaSubequesito: 1.5,
         quesitoId: desenvolturaeExpressaoArt.idQuesito,
       },
     ],
