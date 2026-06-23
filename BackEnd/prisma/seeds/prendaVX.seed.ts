@@ -1,9 +1,9 @@
-// prisma/seeds/prendaJuvenilAdulta.seed.ts
+// prisma/seeds/prendaVeteranaXirua.seed.ts
 import { PrismaClient, VivenciaSubGrupo } from "@prisma/client";
 
-export async function seedPrendaJuvenilAdulta(prisma: PrismaClient) {
-  // Substitua pelo ID real da prova prática de Juvenil/Adulta no seu banco
-  const PRATICA_ID = 3; 
+export async function seedPrendaVeteranaXirua(prisma: PrismaClient) {
+  // Substitua pelo ID real da prova prática de Veterana/Xirua no seu banco
+  const PRATICA_ID = 5; 
 
   // =====================================================
   // BLOCOS

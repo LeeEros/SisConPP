@@ -1,7 +1,6 @@
 import { PrismaClient, VivenciaSubGrupo } from "@prisma/client";
 
 export async function seedPeaoMirim(prisma: PrismaClient) {
-
   // =====================================================
   // BLOCOS
   // =====================================================
@@ -126,7 +125,7 @@ export async function seedPeaoMirim(prisma: PrismaClient) {
         subGrupo: VivenciaSubGrupo.PARTICIPACAO_EVENTOS,
       },
       {
-        nomeSubquesito: "CBTG/Eventos a nível nacional",
+        nomeSubquesito: "CBTG/Eventos da CBTG",
         notaSubequesito: 1.0,
         quesitoId: vivencia.idQuesito,
         subGrupo: VivenciaSubGrupo.PARTICIPACAO_EVENTOS,
@@ -247,7 +246,7 @@ export async function seedPeaoMirim(prisma: PrismaClient) {
         quesitoId: comunicacao.idQuesito,
       },
       {
-        nomeSubquesito: "Conteúdo compatível com categoria",
+        nomeSubquesito: "Conteúdo compatível com a categoria",
         notaSubequesito: 1,
         quesitoId: comunicacao.idQuesito,
       },
@@ -257,12 +256,12 @@ export async function seedPeaoMirim(prisma: PrismaClient) {
         quesitoId: comunicacao.idQuesito,
       },
       {
-        nomeSubquesito: "tilização de artifícios lúdicos durante a  explanação",
+        nomeSubquesito: "Utilização de artifícios lúdicos durante a explanação",
         notaSubequesito: 2.5,
         quesitoId: comunicacao.idQuesito,
       },
       {
-        nomeSubquesito: "Criatividade ultilizada na apresentação",
+        nomeSubquesito: "Criatividade utilizada na apresentação",
         notaSubequesito: 2.5,
         quesitoId: comunicacao.idQuesito,
       },
@@ -290,7 +289,7 @@ export async function seedPeaoMirim(prisma: PrismaClient) {
         quesitoId: desenvoltura.idQuesito,
       },
       {
-        nomeSubquesito: "Fluência, naturalidade, domínio dos assuntos conversados ",
+        nomeSubquesito: "Fluência, naturalidade, domínio dos assuntos conversados",
         notaSubequesito: 1.5,
         quesitoId: desenvoltura.idQuesito,
       },
@@ -354,12 +353,12 @@ export async function seedPeaoMirim(prisma: PrismaClient) {
         quesitoId: dancaSalao.idQuesito,
       },
       {
-        nomeSubquesito: "Execução dos passos característicos/domínio da sala",
+        nomeSubquesito: "Execução dos passos característicos /domínio da sala",
         notaSubequesito: 1,
         quesitoId: dancaSalao.idQuesito,
       },
       {
-        nomeSubquesito: "Execução das variações permetidas conforme literatura",
+        nomeSubquesito: "Execução das variações permitidas conforme literatura",
         notaSubequesito: 1,
         quesitoId: dancaSalao.idQuesito,
       },
@@ -368,278 +367,279 @@ export async function seedPeaoMirim(prisma: PrismaClient) {
 
   // =====================================================
   // PROVAS OPCIONAIS ARTÍSTICA
+  // =====================================================
+
   const declamacao = await prisma.quesitos.create({
-        data: {
-            nomeQuesito: "Declamação",
-            notaMaximaQuesito: 6.0,
-            opcional: true,
-            blocoProvaIdBloco: blocoArtistica.idBloco,
-        },
-    });
+    data: {
+      nomeQuesito: "Declamação",
+      notaMaximaQuesito: 6.0,
+      opcional: true,
+      blocoProvaIdBloco: blocoArtistica.idBloco,
+    },
+  });
 
-    await prisma.subQuesitos.createMany({
-        data: [
-            {   
-                nomeSubquesito: "Fidelidade ao texto",
-                notaSubequesito: 1.0,
-                quesitoId: declamacao.idQuesito,
-            },
-            {
-                nomeSubquesito: "Fundamentos de voz: dicção, impostação e inflexão",
-                notaSubequesito: 2.0,
-                quesitoId: declamacao.idQuesito,
-            },
-            {
-                nomeSubquesito: "Postura cênica e gestual",
-                notaSubequesito: 1.5,
-                quesitoId: declamacao.idQuesito,
-            },
-            {
-                nomeSubquesito: "Transmissão da mensagem poética",
-                notaSubequesito: 1.5,
-                quesitoId: declamacao.idQuesito,
-            },
-        ],
-    }); 
+  await prisma.subQuesitos.createMany({
+    data: [
+      {
+        nomeSubquesito: "Fidelidade ao texto",
+        notaSubequesito: 1.0,
+        quesitoId: declamacao.idQuesito,
+      },
+      {
+        nomeSubquesito: "Fundamentos de voz: dicção, impostação e inflexão",
+        notaSubequesito: 2.0,
+        quesitoId: declamacao.idQuesito,
+      },
+      {
+        nomeSubquesito: "Postura cênica e gestual",
+        notaSubequesito: 1.5,
+        quesitoId: declamacao.idQuesito,
+      },
+      {
+        nomeSubquesito: "Transmissão da mensagem poética",
+        notaSubequesito: 1.5,
+        quesitoId: declamacao.idQuesito,
+      },
+    ],
+  });
 
-    const interpreteVocal = await prisma.quesitos.create({
-        data: {
-            nomeQuesito: "Intérprete Vocal/Cantar",
-            notaMaximaQuesito: 6.0,
-            opcional: true,
-            blocoProvaIdBloco: blocoArtistica.idBloco,
-        },
-    });
+  const interpreteVocal = await prisma.quesitos.create({
+    data: {
+      nomeQuesito: "Intérprete Vocal/Cantar",
+      notaMaximaQuesito: 6.0,
+      opcional: true,
+      blocoProvaIdBloco: blocoArtistica.idBloco,
+    },
+  });
 
-    await prisma.subQuesitos.createMany({
-        data: [
-            {
-                nomeSubquesito: "Fidelidade à letra",
-                notaSubequesito: 1.0,
-                quesitoId: interpreteVocal.idQuesito,
-            },
-            {
-                nomeSubquesito: "Afinação",
-                notaSubequesito: 1.0,
-                quesitoId: interpreteVocal.idQuesito,
-            },
-            {
-                nomeSubquesito: "Ritmo",
-                notaSubequesito: 1.0,
-                quesitoId: interpreteVocal.idQuesito,
-            },
-            {
-                nomeSubquesito: "Interpretação artística e postura cênica",
-                notaSubequesito: 3.0,
-                quesitoId: interpreteVocal.idQuesito,
-            },
-        ],
-    });
+  await prisma.subQuesitos.createMany({
+    data: [
+      {
+        nomeSubquesito: "Fidelidade à letra",
+        notaSubequesito: 1.0,
+        quesitoId: interpreteVocal.idQuesito,
+      },
+      {
+        nomeSubquesito: "Afinação",
+        notaSubequesito: 1.0,
+        quesitoId: interpreteVocal.idQuesito,
+      },
+      {
+        nomeSubquesito: "Ritmo",
+        notaSubequesito: 1.0,
+        quesitoId: interpreteVocal.idQuesito,
+      },
+      {
+        nomeSubquesito: "Interpretação artística e postura cênica",
+        notaSubequesito: 3.0,
+        quesitoId: interpreteVocal.idQuesito,
+      },
+    ],
+  });
 
-    const execucaoInstrumental = await prisma.quesitos.create({
-        data: {
-            nomeQuesito: "Execução Instrumental",
-            notaMaximaQuesito: 6.0,
-            opcional: true,
-            blocoProvaIdBloco: blocoArtistica.idBloco,
-        },
-    });
+  const execucaoInstrumental = await prisma.quesitos.create({
+    data: {
+      nomeQuesito: "Execução Instrumental",
+      notaMaximaQuesito: 6.0,
+      opcional: true,
+      blocoProvaIdBloco: blocoArtistica.idBloco,
+    },
+  });
 
-    await prisma.subQuesitos.createMany({
-        data: [
-            {
-                nomeSubquesito: "Fidelidade à música",
-                notaSubequesito: 1.0,
-                quesitoId: execucaoInstrumental.idQuesito,
-            },
-            {
-                nomeSubquesito: "Postura cênica",
-                notaSubequesito: 1.0,
-                quesitoId: execucaoInstrumental.idQuesito,
-            },
-            {
-                nomeSubquesito: "Afinação do instrumento e ritmo",
-                notaSubequesito: 2.0,
-                quesitoId: execucaoInstrumental.idQuesito,
-            },
-            {
-                nomeSubquesito: "Técnica (habilidade de execução)",
-                notaSubequesito: 2.0,
-                quesitoId: execucaoInstrumental.idQuesito,
-            },
-        ],
-    });
+  await prisma.subQuesitos.createMany({
+    data: [
+      {
+        nomeSubquesito: "Interpretação artística",
+        notaSubequesito: 1.0,
+        quesitoId: execucaoInstrumental.idQuesito,
+      },
+      {
+        nomeSubquesito: "Postura cênica",
+        notaSubequesito: 1.0,
+        quesitoId: execucaoInstrumental.idQuesito,
+      },
+      {
+        nomeSubquesito: "Afinação do instrumento e ritmo",
+        notaSubequesito: 2.0,
+        quesitoId: execucaoInstrumental.idQuesito,
+      },
+      {
+        nomeSubquesito: "Técnica (habilidade de execução)",
+        notaSubequesito: 2.0,
+        quesitoId: execucaoInstrumental.idQuesito,
+      },
+    ],
+  });
 
-    const dancaFolclorica = await prisma.quesitos.create({
-        data: {
-            nomeQuesito: "Dança Folclórica Tradicional",                notaMaximaQuesito: 5.0,
-            opcional: true,
-            blocoProvaIdBloco: blocoArtistica.idBloco,
-        },
-    });
+  const dancaFolclorica = await prisma.quesitos.create({
+    data: {
+      nomeQuesito: "Dança Folclórica Tradicional",
+      notaMaximaQuesito: 6.0,
+      opcional: true,
+      blocoProvaIdBloco: blocoArtistica.idBloco,
+    },
+  });
 
-    await prisma.subQuesitos.createMany({
-        data: [
-            {
-                nomeSubquesito: "Harmonia do par",
-                notaSubequesito: 1.0,
-                quesitoId: dancaFolclorica.idQuesito,
-            },
-            {
-                nomeSubquesito: "Correção coreográfica",
-                notaSubequesito: 2.0,
-                quesitoId: dancaFolclorica.idQuesito,
-            },
-            {
-                nomeSubquesito: "Interpretação artística",
-                notaSubequesito: 2.0,
-                quesitoId: dancaFolclorica.idQuesito,
-            },
-            {
-                nomeSubquesito: "Disposição do par na sala",
-                notaSubequesito: 1.0,
-                quesitoId: dancaFolclorica.idQuesito,
-            },
-        ],
-    });
+  await prisma.subQuesitos.createMany({
+    data: [
+      {
+        nomeSubquesito: "Harmonia do par",
+        notaSubequesito: 1.0,
+        quesitoId: dancaFolclorica.idQuesito,
+      },
+      {
+        nomeSubquesito: "Correção coreográfica",
+        notaSubequesito: 2.0,
+        quesitoId: dancaFolclorica.idQuesito,
+      },
+      {
+        nomeSubquesito: "Interpretação artística",
+        notaSubequesito: 2.0,
+        quesitoId: dancaFolclorica.idQuesito,
+      },
+      {
+        nomeSubquesito: "Disposição do par na sala",
+        notaSubequesito: 1.0,
+        quesitoId: dancaFolclorica.idQuesito,
+      },
+    ],
+  });
 
-    const contarLenda = await prisma.quesitos.create({
-        data: {
-                nomeQuesito: "Contar uma Lenda",
-                notaMaximaQuesito: 6.0,
-                opcional: true,
-                blocoProvaIdBloco: blocoArtistica.idBloco,
-        },
-    }); 
+  const contarLenda = await prisma.quesitos.create({
+    data: {
+      nomeQuesito: "Contar uma Lenda",
+      notaMaximaQuesito: 6.0,
+      opcional: true,
+      blocoProvaIdBloco: blocoArtistica.idBloco,
+    },
+  });
 
-    await prisma.subQuesitos.createMany({
-        data: [
-            {
-                nomeSubquesito: "Domínio do conteúdo",
-                notaSubequesito: 1.0,
-                quesitoId: contarLenda.idQuesito,
-            }, 
-            {
-                nomeSubquesito: "Interpretação",
-                notaSubequesito: 2.0,
-                quesitoId: contarLenda.idQuesito,
-            },
-            {
-                nomeSubquesito: "Transmissão da mensagem",
-                notaSubequesito: 2.0,
-                quesitoId: contarLenda.idQuesito,
-            },
-            {
-                nomeSubquesito: "Utilização de meios lúdicos",
-                notaSubequesito: 1.0,
-                quesitoId: contarLenda.idQuesito,
-            }
-        ]
-    });
+  await prisma.subQuesitos.createMany({
+    data: [
+      {
+        nomeSubquesito: "Domínio do conteúdo",
+        notaSubequesito: 1.0,
+        quesitoId: contarLenda.idQuesito,
+      },
+      {
+        nomeSubquesito: "Interpretação",
+        notaSubequesito: 2.0,
+        quesitoId: contarLenda.idQuesito,
+      },
+      {
+        nomeSubquesito: "Transmissão da mensagem",
+        notaSubequesito: 2.0,
+        quesitoId: contarLenda.idQuesito,
+      },
+      {
+        nomeSubquesito: "Utilização de meios lúdicos",
+        notaSubequesito: 1.0,
+        quesitoId: contarLenda.idQuesito,
+      },
+    ],
+  });
 
-    const contarCauso = await prisma.quesitos.create({
-        data: {
-                nomeQuesito: "Contar Causo",    
-                notaMaximaQuesito: 6.0,
-                opcional: true,
-                blocoProvaIdBloco: blocoArtistica.idBloco,
-            },
-    });
+  const contarCauso = await prisma.quesitos.create({
+    data: {
+      nomeQuesito: "Contar Causo",
+      notaMaximaQuesito: 6.0,
+      opcional: true,
+      blocoProvaIdBloco: blocoArtistica.idBloco,
+    },
+  });
 
-    await prisma.subQuesitos.createMany({
-        data: [
-            {
-                nomeSubquesito: "Criatividade",
-                notaSubequesito: 1.0,
-                quesitoId: contarCauso.idQuesito,
-            },
-            {
-                nomeSubquesito: "Verossimilhança",
-                notaSubequesito: 1.0,
-                quesitoId: contarCauso.idQuesito,
-            },
-            {
-                nomeSubquesito: "Interpretação",
-                notaSubequesito: 2.0,
-                quesitoId: contarCauso.idQuesito,
-            },
-            {
-                nomeSubquesito: "Transmissão da mensagem",
-                notaSubequesito: 2.0,
-                quesitoId: contarCauso.idQuesito,
-            }
-        ]
-    });
+  await prisma.subQuesitos.createMany({
+    data: [
+      {
+        nomeSubquesito: "Criatividade",
+        notaSubequesito: 1.0,
+        quesitoId: contarCauso.idQuesito,
+      },
+      {
+        nomeSubquesito: "Verossimilhança",
+        notaSubequesito: 1.0,
+        quesitoId: contarCauso.idQuesito,
+      },
+      {
+        nomeSubquesito: "Interpretação",
+        notaSubequesito: 2.0,
+        quesitoId: contarCauso.idQuesito,
+      },
+      {
+        nomeSubquesito: "Transmissão da mensagem",
+        notaSubequesito: 2.0,
+        quesitoId: contarCauso.idQuesito,
+      },
+    ],
+  });
 
-    const chula = await prisma.quesitos.create({
-        data: {
-                nomeQuesito: "Chula",    
-                notaMaximaQuesito: 6.0,
-                opcional: true,
-                blocoProvaIdBloco: blocoArtistica.idBloco,
-            },
-    });
+  const chula = await prisma.quesitos.create({
+    data: {
+      nomeQuesito: "Chula",
+      notaMaximaQuesito: 6.0,
+      opcional: true,
+      blocoProvaIdBloco: blocoArtistica.idBloco,
+    },
+  });
 
-    await prisma.subQuesitos.createMany({
-        data: [
-            {
-                nomeSubquesito: "Criatividade",
-                notaSubequesito: 1.0,
-                quesitoId: chula.idQuesito,
-            },
-            {
-                nomeSubquesito: "Interpretação",
-                notaSubequesito: 1.0,
-                quesitoId: chula.idQuesito,
-            },
-            {
-                nomeSubquesito: "Ritmo",
-                notaSubequesito: 2.0,
-                quesitoId: chula.idQuesito,
+  await prisma.subQuesitos.createMany({
+    data: [
+      {
+        nomeSubquesito: "Criatividade",
+        notaSubequesito: 1.0,
+        quesitoId: chula.idQuesito,
+      },
+      {
+        nomeSubquesito: "Interpretação",
+        notaSubequesito: 1.0,
+        quesitoId: chula.idQuesito,
+      },
+      {
+        nomeSubquesito: "Ritmo",
+        notaSubequesito: 2.0,
+        quesitoId: chula.idQuesito,
+      },
+      {
+        nomeSubquesito: "Execução dos passos",
+        notaSubequesito: 2.0,
+        quesitoId: chula.idQuesito,
+      },
+    ],
+  });
 
-            },
-            {
-                nomeSubquesito: "Execução dos passos",
-                notaSubequesito: 2.0,
-                quesitoId: contarCauso.idQuesito,
-            }
-        ]
-    });
+  const desenvolturaeExpressaoArt = await prisma.quesitos.create({
+    data: {
+      nomeQuesito: "Desenvoltura e Expressão",
+      notaMaximaQuesito: 2.0,
+      opcional: false,
+      blocoProvaIdBloco: blocoArtistica.idBloco,
+    },
+  });
 
-    const desenvolturaeExpressao = await prisma.quesitos.create({
-        data: {
-            nomeQuesito: "Desenvoltura e Expressão",
-            notaMaximaQuesito: 2.0,
-            opcional: false,
-            blocoProvaIdBloco: blocoArtistica.idBloco,
-        },
-    });
-
-    await prisma.subQuesitos.createMany({
-        data: [
-            {
-                nomeSubquesito: "Carisma, educação e postura",
-                notaSubequesito: 0.5,
-                quesitoId: desenvolturaeExpressao.idQuesito,
-            },
-            {
-                nomeSubquesito: "Fluência, naturalidade, domínio dos assuntos conversados",
-                notaSubequesito: 0.5,
-                quesitoId: desenvolturaeExpressao.idQuesito,
-            },
-            {
-                nomeSubquesito: "Boa oratória, habilidades de comunicação",
-                notaSubequesito: 0.5,
-                quesitoId: desenvolturaeExpressao.idQuesito,
-            },
-            {
-                nomeSubquesito: "Iniciativa e proatividade",
-                notaSubequesito: 0.5,
-                quesitoId: desenvolturaeExpressao.idQuesito,
-            }
-        ]
-    });
-
+  await prisma.subQuesitos.createMany({
+    data: [
+      {
+        nomeSubquesito: "Carisma, educação e postura",
+        notaSubequesito: 0.5,
+        quesitoId: desenvolturaeExpressaoArt.idQuesito,
+      },
+      {
+        nomeSubquesito: "Fluência, naturalidade, domínio dos assuntos conversados",
+        notaSubequesito: 0.5,
+        quesitoId: desenvolturaeExpressaoArt.idQuesito,
+      },
+      {
+        nomeSubquesito: "Boa oratória, habilidades de comunicação",
+        notaSubequesito: 0.5,
+        quesitoId: desenvolturaeExpressaoArt.idQuesito,
+      },
+      {
+        nomeSubquesito: "Iniciativa e proatividade",
+        notaSubequesito: 0.5,
+        quesitoId: desenvolturaeExpressaoArt.idQuesito,
+      },
+    ],
+  });
 
   // =====================================================
   // PROVA CAMPEIRA
@@ -675,7 +675,7 @@ export async function seedPeaoMirim(prisma: PrismaClient) {
   });
 
   // =====================================================
-  // PROVA OPCIONAIS CAMPEIRA
+  // PROVAS OPCIONAIS CAMPEIRA
   // =====================================================
 
   const lacaracavalovacaParada = await prisma.quesitos.create({
@@ -687,7 +687,7 @@ export async function seedPeaoMirim(prisma: PrismaClient) {
     },
   });
 
-   await prisma.subQuesitos.createMany({
+  await prisma.subQuesitos.createMany({
     data: [
       {
         nomeSubquesito: "Conhecimento sobre a prova escolhida",
@@ -700,10 +700,10 @@ export async function seedPeaoMirim(prisma: PrismaClient) {
         quesitoId: lacaracavalovacaParada.idQuesito,
       },
       {
-        nomeSubquesito: "Domínio da técnica do artesanato",
+        nomeSubquesito: "Domínio da técnica",
         notaSubequesito: 2.0,
         quesitoId: lacaracavalovacaParada.idQuesito,
-      }
+      },
     ],
   });
 
@@ -716,7 +716,7 @@ export async function seedPeaoMirim(prisma: PrismaClient) {
     },
   });
 
-   await prisma.subQuesitos.createMany({
+  await prisma.subQuesitos.createMany({
     data: [
       {
         nomeSubquesito: "Conhecimento sobre a prova escolhida",
@@ -729,10 +729,10 @@ export async function seedPeaoMirim(prisma: PrismaClient) {
         quesitoId: provaderedeas.idQuesito,
       },
       {
-        nomeSubquesito: "Domínio da técnica do artesanato",
+        nomeSubquesito: "Domínio da técnica",
         notaSubequesito: 2.0,
         quesitoId: provaderedeas.idQuesito,
-      }
+      },
     ],
   });
 
@@ -741,13 +741,13 @@ export async function seedPeaoMirim(prisma: PrismaClient) {
       nomeQuesito: "Reconhecimento de Pelagem",
       notaMaximaQuesito: 4,
       opcional: true,
-    blocoProvaIdBloco: blocoCampeira.idBloco,
+      blocoProvaIdBloco: blocoCampeira.idBloco,
     },
-    });
+  });
 
-    await prisma.subQuesitos.createMany({
-        data: [
-            {
+  await prisma.subQuesitos.createMany({
+    data: [
+      {
         nomeSubquesito: "Conhecimento sobre a prova escolhida",
         notaSubequesito: 1.0,
         quesitoId: reconhecimentoPelagem.idQuesito,
@@ -758,23 +758,23 @@ export async function seedPeaoMirim(prisma: PrismaClient) {
         quesitoId: reconhecimentoPelagem.idQuesito,
       },
       {
-        nomeSubquesito: "Domínio da técnica do artesanato",
+        nomeSubquesito: "Domínio da técnica",
         notaSubequesito: 2.0,
         quesitoId: reconhecimentoPelagem.idQuesito,
-      }
-        ],
-    });
+      },
+    ],
+  });
 
   const reconhecimentoPecasEncilha = await prisma.quesitos.create({
     data: {
       nomeQuesito: "Reconhecimento das Peças da Encilha",
-      notaMaximaQuesito: 4, 
+      notaMaximaQuesito: 4,
       opcional: true,
       blocoProvaIdBloco: blocoCampeira.idBloco,
     },
   });
 
-   await prisma.subQuesitos.createMany({
+  await prisma.subQuesitos.createMany({
     data: [
       {
         nomeSubquesito: "Conhecimento sobre a prova escolhida",
@@ -787,52 +787,52 @@ export async function seedPeaoMirim(prisma: PrismaClient) {
         quesitoId: reconhecimentoPecasEncilha.idQuesito,
       },
       {
-        nomeSubquesito: "Domínio da técnica do artesanato",
+        nomeSubquesito: "Domínio da técnica",
         notaSubequesito: 2.0,
         quesitoId: reconhecimentoPecasEncilha.idQuesito,
-      }
+      },
     ],
   });
 
-  const encilhar = await prisma.quesitos.create({
+  const encilharCampeira = await prisma.quesitos.create({
     data: {
-        nomeQuesito: "Encilhar",
-        notaMaximaQuesito: 4,
-        opcional: true,
-        blocoProvaIdBloco: blocoCampeira.idBloco,
+      nomeQuesito: "Encilhar",
+      notaMaximaQuesito: 4,
+      opcional: true,
+      blocoProvaIdBloco: blocoCampeira.idBloco,
     },
   });
 
-   await prisma.subQuesitos.createMany({
+  await prisma.subQuesitos.createMany({
     data: [
       {
         nomeSubquesito: "Conhecimento sobre a prova escolhida",
         notaSubequesito: 1.0,
-        quesitoId: encilhar.idQuesito,
+        quesitoId: encilharCampeira.idQuesito,
       },
       {
         nomeSubquesito: "Explicação da técnica a ser apresentada",
         notaSubequesito: 1.0,
-        quesitoId: encilhar.idQuesito,
+        quesitoId: encilharCampeira.idQuesito,
       },
       {
-        nomeSubquesito: "Domínio da técnica do artesanato",
+        nomeSubquesito: "Domínio da técnica",
         notaSubequesito: 2.0,
-        quesitoId: encilhar.idQuesito,
-      }
+        quesitoId: encilharCampeira.idQuesito,
+      },
     ],
   });
 
   const prepararChimarrao = await prisma.quesitos.create({
     data: {
-        nomeQuesito: "Preparar Chimarrão",
-        notaMaximaQuesito: 4,
-        opcional: true,
-        blocoProvaIdBloco: blocoCampeira.idBloco,
+      nomeQuesito: "Preparar Chimarrão",
+      notaMaximaQuesito: 4,
+      opcional: true,
+      blocoProvaIdBloco: blocoCampeira.idBloco,
     },
   });
 
-   await prisma.subQuesitos.createMany({
+  await prisma.subQuesitos.createMany({
     data: [
       {
         nomeSubquesito: "Conhecimento sobre a prova escolhida",
@@ -845,68 +845,39 @@ export async function seedPeaoMirim(prisma: PrismaClient) {
         quesitoId: prepararChimarrao.idQuesito,
       },
       {
-        nomeSubquesito: "Domínio da técnica do artesanato",
+        nomeSubquesito: "Domínio da técnica",
         notaSubequesito: 2.0,
         quesitoId: prepararChimarrao.idQuesito,
-      }
+      },
     ],
   });
 
-  const prepararChurrasco = await prisma.quesitos.create({
+  const noDeLenco = await prisma.quesitos.create({
     data: {
-        nomeQuesito: "Preparar Churrasco",
-        notaMaximaQuesito: 4,
-        opcional: true,
-        blocoProvaIdBloco: blocoCampeira.idBloco,
+      nomeQuesito: "Nó do Lenço",
+      notaMaximaQuesito: 4,
+      opcional: true,
+      blocoProvaIdBloco: blocoCampeira.idBloco,
     },
   });
 
-   await prisma.subQuesitos.createMany({
+  await prisma.subQuesitos.createMany({
     data: [
       {
         nomeSubquesito: "Conhecimento sobre a prova escolhida",
         notaSubequesito: 1.0,
-        quesitoId: prepararChurrasco.idQuesito,
+        quesitoId: noDeLenco.idQuesito,
       },
       {
         nomeSubquesito: "Explicação da técnica a ser apresentada",
         notaSubequesito: 1.0,
-        quesitoId: prepararChurrasco.idQuesito,
+        quesitoId: noDeLenco.idQuesito,
       },
       {
-        nomeSubquesito: "Domínio da técnica do artesanato",
+        nomeSubquesito: "Domínio da técnica",
         notaSubequesito: 2.0,
-        quesitoId: prepararChurrasco.idQuesito,
-      }
-    ],
-  });
-
-  const nodelenco = await prisma.quesitos.create({
-    data: {
-        nomeQuesito: "Nó do Lenço",
-        notaMaximaQuesito: 4,
-        opcional: true,
-        blocoProvaIdBloco: blocoCampeira.idBloco,
-    },
-  });
-
-   await prisma.subQuesitos.createMany({
-    data: [
-      {
-        nomeSubquesito: "Conhecimento sobre a prova escolhida",
-        notaSubequesito: 1.0,
-        quesitoId: nodelenco.idQuesito,
+        quesitoId: noDeLenco.idQuesito,
       },
-      {
-        nomeSubquesito: "Explicação da técnica a ser apresentada",
-        notaSubequesito: 1.0,
-        quesitoId: nodelenco.idQuesito,
-      },
-      {
-        nomeSubquesito: "Domínio da técnica do artesanato",
-        notaSubequesito: 2.0,
-        quesitoId: nodelenco.idQuesito,
-      }
     ],
   });
 }

@@ -1,8 +1,8 @@
-// prisma/seeds/peaoJuvenilAdulto.seed.ts
+// prisma/seeds/peaoVeteranoXiru.seed.ts
 import { PrismaClient, VivenciaSubGrupo } from "@prisma/client";
 
-export async function seedPeaoJuvenilAdulto(prisma: PrismaClient) {
-  const PRATICA_ID = 4;
+export async function seedPeaoVeteranoXiru(prisma: PrismaClient) {
+  const PRATICA_ID = 6;
 
   // =====================================================
   // BLOCOS DA PROVA

@@ -2,8 +2,10 @@ import { PrismaClient, VivenciaSubGrupo } from "@prisma/client";
 import bcrypt from "bcrypt";
 import { seedPrendaMirim } from "./seeds/prendaMirim.seed";
 import { seedPeaoMirim } from "./seeds/peaoMirim.seed";
-import { seedPrendas } from "./seeds/prendaJAVX.seed";
-import { seedPeoes } from "./seeds/peaoJAVX.seed";
+import { seedPrendaJuvenilAdulta } from "./seeds/prendaJAVX.seed";
+import { seedPeaoJuvenilAdulto } from "./seeds/peaoJAVX.seed";
+import { seedPrendaVeteranaXirua } from "./seeds/prendaVX.seed";
+import { seedPeaoVeteranoXiru } from "./seeds/peaoVX.seed";
 
 const prisma = new PrismaClient();
 
@@ -54,13 +56,13 @@ async function main() {
     });
 
     const ProvaPrendaJAVX = await prisma.quesitos.create({
-        data: 
-            {
-                nomeQuesito: "Questões corretas",
-                notaMaximaQuesito: 75.0,
-                opcional: false,
-                provaTeoricaIdprovaTeorica: 3,
-            }
+        data:
+        {
+            nomeQuesito: "Questões corretas",
+            notaMaximaQuesito: 75.0,
+            opcional: false,
+            provaTeoricaIdprovaTeorica: 3,
+        }
     });
 
     await prisma.subQuesitos.create({
@@ -86,13 +88,13 @@ async function main() {
     });
 
     const ProvaPeaoJAVX = await prisma.quesitos.create({
-        data: 
-            {
-                nomeQuesito: "Questões corretas",
-                notaMaximaQuesito: 75.0,
-                opcional: false,
-                provaTeoricaIdprovaTeorica: 4,
-            }
+        data:
+        {
+            nomeQuesito: "Questões corretas",
+            notaMaximaQuesito: 75.0,
+            opcional: false,
+            provaTeoricaIdprovaTeorica: 4,
+        }
     });
 
     await prisma.subQuesitos.createMany({
@@ -129,12 +131,26 @@ async function main() {
         data: [
             { idProvaPratica: 1, nomeProva: "Prova Pratica Prenda Mirim", notaMaxima: 100 },
             { idProvaPratica: 2, nomeProva: "Prova Pratica Peão Mirim", notaMaxima: 100 },
-            { idProvaPratica: 3, nomeProva: "Prova Pratica Prenda Juvenil, Adulta, Veterana e Xirua", notaMaxima: 100 },
-            { idProvaPratica: 4, nomeProva: "Prova Pratica Peão Juvenil, Adulto, Veterano e Xiru", notaMaxima: 100 },
+            { idProvaPratica: 3, nomeProva: "Prova Pratica Prenda Juvenil e Adulta", notaMaxima: 100 },
+            { idProvaPratica: 4, nomeProva: "Prova Pratica Peão Juvenil e Adulto", notaMaxima: 100 },
+            { idProvaPratica: 5, nomeProva: "Prova Pratica Prenda Veterana e Xirua", notaMaxima: 100 },
+            { idProvaPratica: 6, nomeProva: "Prova Pratica Peão Veterano e Xiru", notaMaxima: 100 },
         ]
     });
 
     console.log("✅ Provas Práticas criados com sucesso!");
+
+    // =========================
+    // PROVAS POR CATEGORIA
+    // =========================
+    await seedPrendaMirim(prisma);
+    await seedPeaoMirim(prisma);
+    await seedPrendaJuvenilAdulta(prisma);
+    await seedPeaoJuvenilAdulto(prisma);
+    await seedPrendaVeteranaXirua(prisma);
+    await seedPeaoVeteranoXiru(prisma);
+
+    console.log("✅ Seed executado com sucesso!");
 
     // =========================
     // CATEGORIAS
@@ -147,24 +163,14 @@ async function main() {
             { idCategoria: 4, nomeCategoria: "Peão Juvenil", escolaridade: "Ter concluído ou cursando o 6 ano do Ensino Fundamental", sorteioDanca: 3, idadeInicial: 12, idadeLimite: 17, provaPraticaId: 4, provaTeoricaId: 4 },
             { idCategoria: 5, nomeCategoria: "Prenda Adulta", escolaridade: "Ter concluído ou cursando o Ensino Médio", sorteioDanca: 5, idadeInicial: 18, idadeLimite: 0, provaPraticaId: 3, provaTeoricaId: 3 },
             { idCategoria: 6, nomeCategoria: "Peão Adulto", escolaridade: "Ter concluído ou cursando o Ensino Médio", sorteioDanca: 5, idadeInicial: 18, idadeLimite: 0, provaPraticaId: 4, provaTeoricaId: 4 },
-            { idCategoria: 7, nomeCategoria: "Prenda Veterana", escolaridade: "Ter concluído ou cursando o Ensino Fundamental", sorteioDanca: 1, idadeInicial: 30, idadeLimite: 0, provaPraticaId: 3, provaTeoricaId: 3 },
-            { idCategoria: 8, nomeCategoria: "Peão Veterano", escolaridade: "Ter concluído ou cursando o Ensino Fundamental", sorteioDanca: 1, idadeInicial: 30, idadeLimite: 0, provaPraticaId: 4, provaTeoricaId: 4 },
-            { idCategoria: 9, nomeCategoria: "Prenda Xirua", escolaridade: "Ter concluído ou cursando o Ensino Fundamental", sorteioDanca: 1, idadeInicial: 50, idadeLimite: 0, provaPraticaId: 3, provaTeoricaId: 3 },
-            { idCategoria: 10, nomeCategoria: "Peão Xirú", escolaridade: "Ter concluído ou cursando o Ensino Fundamental", sorteioDanca: 1, idadeInicial: 50, idadeLimite: 0, provaPraticaId: 4, provaTeoricaId: 4 },
+            { idCategoria: 7, nomeCategoria: "Prenda Veterana", escolaridade: "Ter concluído ou cursando o Ensino Fundamental", sorteioDanca: 1, idadeInicial: 30, idadeLimite: 0, provaPraticaId: 5, provaTeoricaId: 3 },
+            { idCategoria: 8, nomeCategoria: "Peão Veterano", escolaridade: "Ter concluído ou cursando o Ensino Fundamental", sorteioDanca: 1, idadeInicial: 30, idadeLimite: 0, provaPraticaId: 6, provaTeoricaId: 4 },
+            { idCategoria: 9, nomeCategoria: "Prenda Xirua", escolaridade: "Ter concluído ou cursando o Ensino Fundamental", sorteioDanca: 1, idadeInicial: 50, idadeLimite: 0, provaPraticaId: 5, provaTeoricaId: 3 },
+            { idCategoria: 10, nomeCategoria: "Peão Xirú", escolaridade: "Ter concluído ou cursando o Ensino Fundamental", sorteioDanca: 1, idadeInicial: 50, idadeLimite: 0, provaPraticaId: 6, provaTeoricaId: 4 },
         ],
         skipDuplicates: true,
     });
     console.log("✅ Categorias criadas com sucesso!");
-
-    // =========================
-    // PROVAS POR CATEGORIA
-    // =========================
-    await seedPrendaMirim(prisma);
-    await seedPeaoMirim(prisma);
-    await seedPrendas(prisma);
-    await seedPeoes(prisma);
-
-    console.log("✅ Seed executado com sucesso!");
 
     // =========================
     // DANÇAS
