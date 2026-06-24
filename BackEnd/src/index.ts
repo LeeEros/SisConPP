@@ -33,6 +33,8 @@ app.use(cors({
   credentials: true
 }));
 
+app.options('*', cors());
+
 app.use(express.json()); // Para analisar o corpo das requisições como JSON
 
 // Definindo os prefixos das rotas 
