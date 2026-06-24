@@ -55,9 +55,9 @@ app.use("/danca", danca);
 app.use("/auth", auth);
 app.use("/relatorios", relatorios);
 
-const PORT = process.env.PORT || 3005;
+const PORT = Number(process.env.PORT) || 3005;
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log("Hello World");
   console.log(`Servidor rodando em http://localhost:${PORT}`);  
 });
