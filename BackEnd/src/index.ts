@@ -27,7 +27,7 @@ import { METHODS } from "http"
 const app: Application = express(); 
 
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: ['http://localhost:5173', 'http://192.168.1.161:3001'], 
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }));
