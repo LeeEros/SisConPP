@@ -59,5 +59,5 @@ const PORT = Number(process.env.PORT) || 3005;
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log("Hello World");
-  console.log(`Servidor rodando em http://localhost:${PORT}`);  
+  console.log(`Servidor rodando na porta ${PORT} e ouvindo toda a rede local.`); 
 });
