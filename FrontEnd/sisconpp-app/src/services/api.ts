@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosHeaders } from 'axios';
 import { RT } from '../types/RT';
 import { CTG } from '../types/CTG';
 import { Usuario } from '../types/Usuario';
@@ -22,10 +22,10 @@ api.interceptors.request.use((config) => {
 
   if (token) {
     if (!config.headers) {
-      config.headers = {} as any;
+      config.headers = new AxiosHeaders();
     }
 
-    config.headers.Authorization = `Bearer ${token}`;
+    config.headers.set('Authorization', `Bearer ${token}`);
   }
 
   return config;
