@@ -190,8 +190,6 @@ export default function EdicaoAvaliacaoTeoricaPage() {
                     },
                 };
 
-                console.log("Payload para atualização:", payload);
-
                 // ⚠️ Envia a requisição de PUT para o Back-end
                 await atualizarAvaliacaoTeorica(idAvaliacaoSalva, payload);
                 editouAlgum = true;

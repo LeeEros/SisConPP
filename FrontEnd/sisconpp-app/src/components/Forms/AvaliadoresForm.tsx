@@ -95,8 +95,6 @@ export default function AvaliadoresForm({ onClose, avaliadorToEdit }: AvaliadorF
                // A lógica de backend deve tratar isso, ou removemos do payload aqui se necessário
             }
 
-            console.log('Payload enviado:', avaliadorPayload);
-
             if (formData.idUsuario > 0) {
                 await atualizarUsuario(avaliadorPayload);
                 toast.success('Avaliador atualizado com sucesso!');

@@ -165,8 +165,6 @@ export default function CandidatoForm({ onClose, candidatoToEdit }: CandidatoFor
                 anexoProvaEsportivaCampeira: formData.anexoProvaEsportivaCampeira || undefined,
             };
 
-            console.log(candidatoPayload);
-
             if (formData.idCandidato > 0) {
                 await atualizarCandidato(candidatoPayload);
                 toast.success('Candidato atualizado com sucesso!');

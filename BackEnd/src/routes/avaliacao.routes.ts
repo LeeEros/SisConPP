@@ -27,7 +27,6 @@ router.get( "/avaliacao/:avaliadorId/:candidatoId", authMiddleware, permitirFunc
 
 router.get("/avaliacaoCompleta/:candidatoId/:avaliadorId",authMiddleware, permitirFuncoes(["ADMINISTRADOR"]), async (req: Request, res: Response) => {
     await avaliacaoController.listarAvaliacoesCompletasPorCandidatoAvaliador(req, res);
-    console.log("Rota de avaliação completa chamada");
 });
 
 router.put("/avaliacaoCompleta/:idAvalicao", authMiddleware, permitirFuncoes(["ADMINISTRADOR"]), async (req: Request, res: Response) => {

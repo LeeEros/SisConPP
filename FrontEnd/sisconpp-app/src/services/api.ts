@@ -394,7 +394,6 @@ export async function getRelatorioPorCategoriaConcurso(
   concursoIdConcurso: number
 ): Promise<RelatorioCategoriaDTO[]> {
   const response = await api.get<RelatorioCategoriaDTO[]>(`/relatorios/relatorioDetalhado/${categoriaId}/${concursoIdConcurso}`);
-  console.log(response);
   return response.data;
 }
 

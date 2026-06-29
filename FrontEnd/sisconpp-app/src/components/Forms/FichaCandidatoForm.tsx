@@ -65,7 +65,6 @@ export default function FichaCandidatoForm({
         };
 
         try {
-            console.log("Payload enviado:", fichaCandidatoPayload);
             await criarFichaCandidato(fichaCandidatoPayload);
             toast.success("Ficha do Candidato criada com sucesso!");
             onClose();

@@ -213,8 +213,6 @@ class CandidatoService {
 
     async deletarCandidato(idCandidato: number) {
         try {
-            console.log("IdCandidato:", idCandidato);
-
             const candidato = await this.prisma.candidato.findUnique({
                 where: { idCandidato },
             });

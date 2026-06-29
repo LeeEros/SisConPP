@@ -29,8 +29,6 @@ class ConcursoService {
                     local,
                 },
             });
-
-            console.log("Concurso criado com sucesso.");
             return concurso;
         } catch (error) {
             console.error("Erro detalhado:", error);
@@ -71,7 +69,6 @@ class ConcursoService {
                 data: dataAtualizada,
             });
 
-            console.log("Concurso alterado com sucesso.");
             return concurso;
         } catch (error) {
             console.error("Erro detalhado:", error);

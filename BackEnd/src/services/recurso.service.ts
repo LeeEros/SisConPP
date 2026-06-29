@@ -116,7 +116,6 @@ class RecursoServie {
                     status
                 }    
             });
-            console.log(status);
             return recurso;
         } catch (error) {
             console.error("Erro ao alterar status do recurso:", error);

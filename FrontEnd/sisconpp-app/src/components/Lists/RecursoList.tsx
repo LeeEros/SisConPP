@@ -19,7 +19,6 @@ export default function RecursoList({ recursos, loading, onView }: RecursoListPr
     iso ? new Date(iso).toLocaleDateString("pt-BR") : "---";
 
   const renderStatusBadge = (status: Recurso["status"]) => {
-    console.log("encontrou status:", status);
     if (status === "DEFERIDO") {
       return (
         <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700 border border-green-200">

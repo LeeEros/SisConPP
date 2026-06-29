@@ -16,8 +16,6 @@ export default function ConcursoView({ concurso }: Props) {
   // Função simples para simular a abertura do arquivo (caso venha do backend como buffer ou url)
   const abrirEdital = () => {
     if (concurso.anexoEdital) {
-        // Lógica de visualização (similar ao do Candidato)
-        console.log("Abrindo edital...", concurso.anexoEdital);
         // Aqui você implementaria a conversão de Buffer/Blob igual ao VisualizacaoCandidato
     }
   };
